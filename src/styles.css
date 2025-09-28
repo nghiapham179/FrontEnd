@@ -1,1 +1,19 @@
+/* Reset mặc định gây viền trắng */
+html, body {
+  height: 100%;
+  margin: 0;              /* <-- quan trọng */
+  padding: 0;
+}
+
+/* Cho chắc: mọi tính toán theo border-box */
+*, *::before, *::after { box-sizing: border-box; }
+
+/* Đảm bảo vùng app phủ đủ chiều cao */
+app-root, .auth-layout {
+  display: block;
+  min-height: 100vh;
+}
+
+/* (tuỳ chọn) nền mặc định đen để thấy rõ khi ảnh chưa load */
+body { background: #000; }
 /* You can add global styles to this file, and also import other style files */
