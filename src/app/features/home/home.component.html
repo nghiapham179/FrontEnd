@@ -1,0 +1,264 @@
+<!-- POSTER COVER (không dùng *ngIf để tránh kẹt) -->
+<section
+  class="poster-cover"
+  [class.hide]="!showCover"
+  [class.force-off]="forceOff"
+  (animationend)="onCoverAnimEnd($event)"
+>
+  <img class="poster-media" src="assets/Phone/IPhone.jpg" alt="TechNoX poster" />
+  <h1 class="poster-title">TECHNO<span>X</span></h1>
+  <!-- <button class="poster-skip" type="button" (click)="skipCover()">Skip</button> -->
+</section>
+
+<!-- HEADER -->
+<header class="site-header">
+  <div class="container header-inner">
+    <button class="icon-btn" type="button" (click)="toggleMenu()" aria-label="Open menu">☰</button>
+
+    <!-- LOGO -->
+    <a class="brand" routerLink="/">
+      <img
+        class="brand__logo"
+        src="assets/Phone/Logo.png"
+        alt="TechNoX"
+        width="200" height="40"
+        decoding="async" fetchpriority="high"
+      />
+      <span class="brand__name">TechNoX</span>
+    </a>
+
+    <div class="header-actions">
+      <a class="link-auth" routerLink="/login">Đăng nhập</a>
+      <a class="btn btn--accent btn-auth" routerLink="/register">Đăng ký</a>
+      <a class="cart" routerLink="/cart" aria-label="Giỏ hàng">giỏ hàng (0)</a>
+    </div>
+  </div>
+</header>
+
+<!-- MOBILE MENU -->
+<nav class="mobile-menu" [class.open]="mobileMenuOpen" (click)="closeMenu()">
+  <div class="mobile-menu__panel" (click)="$event.stopPropagation()">
+    <button class="mobile-menu__close" type="button" (click)="closeMenu()">✕</button>
+    <ul>
+      <li><a routerLink="/shop" (click)="closeMenu()">Điện thoại</a></li>
+      <li><a routerLink="/accessories" (click)="closeMenu()">Phụ kiện</a></li>
+      <li><a routerLink="/deals" (click)="closeMenu()">Khuyến mãi</a></li>
+      <li><a routerLink="/stores" (click)="closeMenu()">Cửa hàng</a></li>
+      <li><a routerLink="/news" (click)="closeMenu()">Tin tức</a></li>
+      <li><a routerLink="/about" (click)="closeMenu()">Về chúng tôi</a></li>
+      <li class="divider"></li>
+      <li><a routerLink="/login" (click)="closeMenu()">Đăng nhập</a></li>
+      <li><a routerLink="/register" (click)="closeMenu()">Đăng ký</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main>
+  <!-- HERO -->
+  <section class="hero section-pad">
+    <div class="container hero__inner">
+      <p class="eyebrow">Chúng tôi là TechNoX</p>
+      <h1 class="hero__title">SMARTPHONES<br /> FOR EVERYONE</h1>
+      <p class="hero__desc">
+        Bán lẻ điện thoại chính hãng. Bảo hành 12–24 tháng. Trả góp 0%,
+        giao nhanh trong ngày, đổi trả dễ dàng.
+      </p>
+      <a class="btn btn--accent" href="#">MUA NGAY</a>
+
+      <div class="hero__gallery">
+        <img src="assets/Phone/IPhone.jpg"  alt="Flagship phone" width="1200" height="800" loading="eager" />
+        <img src="assets/Phone/Iphone1.jpg" alt="Flagship phone"  width="1200" height="800" loading="lazy" />
+      </div>
+    </div>
+  </section>
+
+  <!-- SẢN PHẨM NỔI BẬT -->
+  <!-- SẢN PHẨM NỔI BẬT -->
+  <section class="selected section-pad">
+    <div class="container selected__inner">
+      <p class="eyebrow eyebrow--gold">Dòng sản phẩm nổi bật</p>
+      <h2 class="section-title">ĐIỆN THOẠI<br />ĐƯỢC CHỌN LỌC</h2>
+
+      <div class="card-grid">
+        <article class="card" *ngFor="let p of pagedFeatured">
+          <a class="card__media"
+             [style.background-image]="'url(' + p.image + ')'"
+             [attr.aria-label]="p.name"></a>
+          <div class="card__body">
+            <h3 class="card__title">{{ p.name }}</h3>
+            <div class="chip-row">
+              <span class="chip" *ngFor="let t of p.tags">{{ t }}</span>
+            </div>
+            <p class="price">Từ {{ p.price | number:'1.0-0' }}đ</p>
+            <button class="btn btn--block" type="button">THÊM VÀO GIỎ</button>
+          </div>
+        </article>
+      </div>
+
+      <!-- Pager -->
+      <div class="pager">
+        <button class="pager__btn" (click)="prevFeatured()" [disabled]="featuredPage === 1">
+          <span>←</span>
+        </button>
+
+        <span class="pager__info">Trang {{ featuredPage }} / {{ featuredTotalPages }}</span>
+
+        <button class="pager__btn" (click)="nextFeatured()" [disabled]="featuredPage === featuredTotalPages">
+          <span>→</span>
+        </button>
+      </div>
+
+
+
+      <div class="center">
+        <a class="btn btn--outline" routerLink="/accessories">XEM THÊM</a>
+      </div>
+
+    </div> <!-- <- thiếu thẻ này -->
+  </section>
+
+
+
+
+  <!-- LAPTOP -->
+  <section class="laptop-intro section-pad">
+    <div class="container">
+      <div class="split">
+        <div class="split__media">
+          <video
+            #heroVideo
+            class="hero-video"
+            autoplay
+            muted
+            loop
+            playsinline
+            preload="auto"
+            (error)="onVideoError($event)"
+            (canplay)="onVideoCanPlay()"
+          >
+            <source src="assets/Video/MacPro.mp4" type="video/mp4" />
+            Trình duyệt của bạn không hỗ trợ video.
+          </video>
+
+          <button class="mute-btn" (click)="toggleMute(heroVideo)">
+            {{ isMuted ? '🔇' : '🔊' }}
+          </button>
+        </div>
+
+        <div class="split__content">
+          <p class="eyebrow">Laptop mới nhất</p>
+          <h2 class="section-title">KHÁM PHÁ CÁC DÒNG<br/>LAPTOP HIỆN ĐẠI</h2>
+          <p class="muted">
+            TechNoX mang đến cho bạn các mẫu laptop hiệu năng cao, thiết kế sang trọng,
+            phù hợp cho học tập, làm việc và giải trí.
+            Khám phá ngay để chọn cho mình chiếc laptop ưng ý.
+          </p>
+          <a class="btn btn--outline" href="#">TÌM HIỂU THÊM</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+
+
+
+  <!-- PHỤ KIỆN -->
+  <section class="journal section-pad accessories">
+    <div class="container">
+      <p class="eyebrow eyebrow--gold">Sản phẩm kèm theo</p>
+      <h2 class="section-title">PHỤ KIỆN</h2>
+
+      <div class="journal-grid">
+        <article class="story" *ngFor="let it of pagedAccessories">
+          <a class="story__media" [style.background-image]="'url(' + it.image + ')'"></a>
+          <h3 class="story__title">{{ it.name }}</h3>
+          <p class="story__meta">{{ it.price | number:'1.0-0' }}đ — {{ it.tag }}</p>
+        </article>
+      </div>
+
+      <!-- Pager -->
+      <div class="pager">
+        <button class="pager__btn" (click)="prevPage()" [disabled]="page === 1">←</button>
+        <span class="pager__info">Trang {{ page }} / {{ totalPages }}</span>
+        <button class="pager__btn" (click)="nextPage()" [disabled]="page === totalPages">→</button>
+      </div>
+
+      <div class="center">
+        <a class="btn btn--outline" routerLink="/shop">XEM THÊM</a>
+      </div>
+    </div>
+  </section>
+
+
+
+  <!-- NEWSLETTER -->
+  <section class="newsletter">
+    <div class="container newsletter__inner">
+      <h3>Nhận ưu đãi &amp; voucher hàng tuần</h3>
+      <form class="newsletter__form" (submit)="$event.preventDefault()">
+        <input type="email" placeholder="Email của bạn" required autocomplete="email" />
+        <button class="btn" type="submit">ĐĂNG KÝ</button>
+      </form>
+      <p class="muted small">Bạn có thể hủy nhận email bất cứ lúc nào.</p>
+    </div>
+  </section>
+</main>
+
+<!-- FOOTER -->
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div>
+      <div class="brand brand--footer">TechNoX</div>
+      <p class="muted small">Điện thoại chính hãng — giá tốt.</p>
+    </div>
+    <div>
+      <h4 class="footer-title">Sản phẩm</h4>
+      <ul>
+        <li><a href="#">Flagship</a></li>
+        <li><a href="#">Tầm trung</a></li>
+        <li><a href="#">Phụ kiện</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4 class="footer-title">Về TechNoX</h4>
+      <ul>
+        <li><a href="#">Giới thiệu</a></li>
+        <li><a href="#">Cửa hàng</a></li>
+        <li><a href="#">Tuyển dụng</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4 class="footer-title">Hỗ trợ</h4>
+      <ul>
+        <li><a href="#">Bảo hành</a></li>
+        <li><a href="#">Giao hàng</a></li>
+        <li><a href="#">Liên hệ</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="container footer-bottom">
+    <span class="muted small">© TechNoX — All rights reserved</span>
+    <nav class="footer-links">
+      <a href="#">Privacy</a>
+      <a href="#">Terms</a>
+      <a href="#">Cookies</a>
+    </nav>
+  </div>
+</footer>
+
+<!-- COOKIE BANNER -->
+<div class="cookie" *ngIf="cookieOpen" role="dialog" aria-live="polite" aria-label="Cookie preference">
+  <div class="cookie__panel">
+    <h4 class="cookie__title">Cookie preference</h4>
+    <p class="cookie__text">
+      Chúng tôi dùng cookie để cải thiện trải nghiệm của bạn trên website.
+    </p>
+    <div class="cookie__actions">
+      <button class="btn" type="button" (click)="acceptCookies()">ĐỒNG Ý</button>
+      <button class="btn" type="button" (click)="refuseCookies()">TỪ CHỐI</button>
+      <button class="btn" type="button" (click)="customCookies()">TUỲ CHỈNH</button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,284 @@
+/* ===== Fonts (Poppins) ===== */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap");
+
+.auth-layout {
+  position: relative;
+  display: grid;
+  grid-template-columns: 40% 60%;
+  min-height: 100vh;
+  font-family: "Poppins", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  background: none;
+}
+
+/* Background ảnh phủ toàn màn hình */
+.auth-layout::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url("/assets/1.jpg") no-repeat center center / cover;
+  z-index: -1;
+}
+
+/* Overlay mờ để chữ dễ đọc */
+.auth-layout::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: -1;
+}
+
+/* ===== Left (Logo + Text) ===== */
+.brand-pane {
+  padding: 56px 56px 32px 72px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  color: #fff;
+  position: relative;
+  z-index: 1;
+}
+
+.brand-logo {
+  width: 200px;
+  height: auto;
+  margin-bottom: 24px;
+  filter: drop-shadow(0 0 10px rgba(255,255,255,0.3));
+  mix-blend-mode: screen;
+}
+
+.brand-title {
+  font-size: 66px;
+  line-height: 1.2;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.brand-note {
+  font-size: 15px;
+  color: #ddd;
+  margin-top: 16px;
+}
+
+.hotlines {
+  display: grid;
+  gap: 8px;
+}
+
+.hotlines a {
+  font-weight: 700;
+  text-decoration: none;
+  color: #fff;
+  border-bottom: 3px solid #e74b45;
+  width: fit-content;
+}
+
+.socials {
+  margin-top: auto;
+  display: flex;
+  gap: 16px;
+}
+
+.socials a {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #fff;
+  color: #111;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+/* ===== Right / Card (Login Box) ===== */
+.form-pane {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 24px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Box login */
+.card {
+  width: 560px;
+  max-width: 96vw;
+  background: #fff;
+  border-radius: 24px;
+  padding: 56px 48px;
+  box-shadow: 0 40px 80px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+.card h2 {
+  margin: 0 0 16px;
+  font-size: 40px;
+  font-weight: 800;
+}
+
+.description {
+  margin: 0 0 32px;
+  color: #555;
+  font-size: 16px;
+}
+
+.card form {
+  display: grid;
+  gap: 24px;
+}
+
+/* Inputs */
+.card input[type="text"],
+.card input[type="password"] {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 18px 20px;
+  border-radius: 14px;
+  border: 1px solid #ddd;
+  background: #fafafa;
+  font-size: 17px;
+  transition: all 0.2s ease;
+  display: block;
+}
+
+.card input:focus {
+  border-color: #e74b45;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(231, 75, 69, 0.2);
+}
+
+/* Remember checkbox */
+.remember {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #666;
+  font-size: 15px;
+  user-select: none;
+}
+
+/* Button chính */
+.primary-btn {
+  width: 100%;
+  padding: 18px;
+  border: none;
+  border-radius: 14px;
+  font-size: 20px;
+  font-weight: 700;
+  background: #e74b45;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 16px;
+}
+
+.primary-btn:hover {
+  background: #d32f2f;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+}
+
+.primary-btn:active {
+  transform: translateY(1px);
+}
+
+.primary-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Container cho 2 button nhỏ */
+.action-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+/* Button nhỏ */
+.small-btn {
+  flex: 1;
+  padding: 10px 16px;
+  border: 2px solid #e74b45;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  background: transparent;
+  color: #e74b45;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.small-btn:hover {
+  background: #e74b45;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(231, 75, 69, 0.3);
+}
+
+.small-btn:active {
+  transform: translateY(1px);
+}
+
+/* Button Register có thể có style hơi khác */
+.register-btn {
+  background: rgba(231, 75, 69, 0.1);
+  border-color: #e74b45;
+}
+
+.register-btn:hover {
+  background: #e74b45;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 920px) {
+  .auth-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .brand-pane {
+    padding: 36px 28px 8px;
+    text-align: center;
+    align-items: center;
+  }
+
+  .brand-title {
+    font-size: 36px;
+  }
+
+  .form-pane {
+    padding-top: 0;
+  }
+
+  .card {
+    padding: 40px 32px;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .small-btn {
+    width: 100%;
+  }
+}
+
+/* Thêm style cho links phụ nếu cần */
+.additional-links {
+  margin-top: 24px;
+  text-align: center;
+}
+
+.additional-links a {
+  display: block;
+  color: #e74b45;
+  text-decoration: none;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.additional-links a:hover {
+  text-decoration: underline;
+}

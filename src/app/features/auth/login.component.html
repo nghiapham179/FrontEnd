@@ -1,0 +1,85 @@
+<div class="auth-layout">
+  <aside class="brand-pane">
+    <img class="brand-logo" src="assets/Pokecut_1759070674094.png" alt="Application" />
+    <h1 class="brand-title">
+      Welcome<br />
+      to AppLc <br />
+      User Area
+    </h1>
+    <p class="brand-note">To request an account,<br />just call us</p>
+    <div class="hotlines">
+      <a href="tel:+245941660355">+245 04 166 0355</a>
+      <a href="tel:+347423902456">+347 42 390 2456</a>
+    </div>
+    <div class="socials">
+      <a aria-label="Facebook" href="#i">f</a>
+      <a aria-label="Twitter/X" href="#i">t</a>
+      <a aria-label="LinkedIn" href="#i">ln</a>
+    </div>
+  </aside>
+
+  <main class="form-pane">
+    <div class="card">
+      <h2>Sign in</h2>
+      <p class="description">
+        Please enter your credentials first.<br />
+        Won't be shared publicly, won't be spanned.
+      </p>
+
+      <form (ngSubmit)="onSubmit()" #formRef="ngForm" novalidate>
+        <input
+          type="text"
+          name="username"
+          [(ngModel)]="model.username"
+          placeholder="User name"
+          required
+        />
+        <input
+          type="password"
+          name="password"
+          [(ngModel)]="model.password"
+          placeholder="Password"
+          required
+          minlength="6"
+        />
+
+        <div class="remember">
+          <label>
+            <input
+              type="checkbox"
+              name="remember"
+              [(ngModel)]="model.remember"
+            />
+            Remember me
+          </label>
+        </div>
+
+        <button
+          type="submit"
+          class="primary-btn"
+          [disabled]="isSubmitting"
+        >
+          <span *ngIf="!isSubmitting">Sign in</span>
+          <span *ngIf="isSubmitting">Signing in...</span>
+        </button>
+      </form>
+
+      <div class="action-buttons">
+        <button
+          type="button"
+          class="small-btn"
+          (click)="onForgotPassword()"
+        >
+          Forgot Password?
+        </button>
+        <button
+          type="button"
+          class="small-btn register-btn"
+          (click)="onRegister()"
+        >
+          Create New Account
+        </button>
+      </div>
+    </div>
+  </main>
+</div>
