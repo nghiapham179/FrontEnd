@@ -4,9 +4,10 @@
     <h1 class="section-title">Sản phẩm mới</h1>
 
     <div class="hero__carousel">
-      <button class="hero__arrow left" (click)="heroPrev()" [disabled]="heroPage===1" aria-label="Trang trước">‹</button>
+      <!-- Nút mũi tên: chỉ hiển thị trạng thái, không có click -->
+      <button class="hero__arrow left" type="button" [disabled]="heroPage===1" aria-label="Trang trước">‹</button>
 
-      <div class="card-grid">
+      <div #heroGrid class="card-grid">
         <article class="card" *ngFor="let p of heroPaged; trackBy: trackById">
           <a class="card__media" [ngStyle]="bgImg(p.image)" aria-hidden="true"></a>
           <div class="card__body">
@@ -15,17 +16,16 @@
               <span class="chip" *ngFor="let t of p.tags">{{ t }}</span>
             </div>
             <div><span class="price">{{ formatPrice(p.price) }}</span></div>
-            <button class="btn btn--accent btn--block" (click)="add(p)" [disabled]="!p.inStock">Thêm vào giỏ</button>
+            <!-- UI-only: không xử lý click -->
+            <button class="btn btn--accent btn--block" type="button" [disabled]="!p.inStock">Thêm vào giỏ</button>
           </div>
         </article>
       </div>
 
-      <button class="hero__arrow right" (click)="heroNext()" [disabled]="heroPage===heroTotalPages" aria-label="Trang sau">›</button>
+      <button class="hero__arrow right" type="button" [disabled]="heroPage===heroTotalPages" aria-label="Trang sau">›</button>
     </div>
   </div>
 </section>
-
-
 
 <!-- DANH MỤC (filters + paging) -->
 <section class="selected">
@@ -34,18 +34,17 @@
     <h2 class="section-title" style="font-size:clamp(28px,6vw,44px)">Tất cả sản phẩm</h2>
 
     <!-- Bộ lọc -->
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;max-width:780px;">
+    <div class="filter-grid">
       <input
         type="search"
         placeholder="Tìm kiếm..."
         [(ngModel)]="searchTerm"
-        (ngModelChange)="page = 1"
-        style="padding:10px;border:1px solid #e1e1e1"
+        (ngModelChange)="page = 1; recalcAndSlice()"
       />
-      <select [(ngModel)]="categoryFilter" (ngModelChange)="page = 1" style="padding:10px;border:1px solid #e1e1e1">
+      <select [(ngModel)]="categoryFilter" (ngModelChange)="page = 1; recalcAndSlice()">
         <option *ngFor="let c of categories" [value]="c">{{ c === 'all' ? 'Tất cả' : c }}</option>
       </select>
-      <select [(ngModel)]="sortKey" (ngModelChange)="page = 1" style="padding:10px;border:1px solid #e1e1e1">
+      <select [(ngModel)]="sortKey" (ngModelChange)="page = 1; recalcAndSlice()">
         <option value="relevance">Mặc định</option>
         <option value="priceAsc">Giá tăng dần</option>
         <option value="priceDesc">Giá giảm dần</option>
@@ -54,7 +53,7 @@
     </div>
 
     <!-- Lưới theo trang -->
-    <div class="card-grid" style="margin-top:18px;">
+    <div #catalogGrid class="card-grid">
       <article class="card" *ngFor="let p of paged; trackBy: trackById">
         <a class="card__media" [ngStyle]="bgImg(p.image)" aria-hidden="true"></a>
         <div class="card__body">
@@ -66,23 +65,22 @@
 
           <div>
             <span class="price">{{ formatPrice(p.price) }}</span>
-            <span *ngIf="!p.inStock" class="chip" style="margin-left:8px;background:#fff3f3;border-color:#ffd9d9;color:#c00;">
-              Hết hàng
-            </span>
+            <span *ngIf="!p.inStock" class="chip chip--oos">Hết hàng</span>
           </div>
 
-          <button class="btn btn--accent btn--block" (click)="add(p)" [disabled]="!p.inStock">
+          <!-- UI-only: không xử lý click -->
+          <button class="btn btn--accent btn--block" type="button" [disabled]="!p.inStock">
             Thêm vào giỏ
           </button>
         </div>
       </article>
     </div>
 
-    <!-- Pager cho DANH MỤC -->
+    <!-- Pager cho DANH MỤC (UI-only: không click) -->
     <div class="pager" *ngIf="totalPages > 1">
-      <button class="pager__btn" (click)="prevPage()" [disabled]="page===1">‹</button>
+      <button class="pager__btn" type="button" [disabled]="page===1">‹</button>
       <div class="pager__info">Trang {{page}} / {{totalPages}}</div>
-      <button class="pager__btn" (click)="nextPage()" [disabled]="page===totalPages">›</button>
+      <button class="pager__btn" type="button" [disabled]="page===totalPages">›</button>
     </div>
   </div>
 </section>

@@ -4,7 +4,7 @@
   --black:#0f0f10; --near-black:#151618; --white:#fff;
   --muted:#bdbdbd; --gold:#c6a56a; --border:rgba(255,255,255,.14);
   --accent: rgba(255, 255, 255, 0.26);
-  --container:92%; --container-max:1180px;
+  --container:92%; --container-max:1200px; /* unified */
 
   color:#eaeaea;
   font-family:"Be Vietnam Pro", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, "Noto Sans", sans-serif;
@@ -19,6 +19,7 @@
 .eyebrow{letter-spacing:.06em;font-size:18px;color:var(--muted);margin:0 0 12px}
 .eyebrow--gold{color:var(--gold)}
 .section-title{font-size:clamp(36px,9vw,68px);font-weight:800;line-height:.95;margin:8px 0 18px}
+
 .split__media {
   position: relative;
   width: 100%;
@@ -47,18 +48,13 @@
   font-size: 16px;
 }
 
-
-
-
-
-
 /* ===== Header compact ===== */
 .site-header { background: var(--black); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 20; }
 .header-inner{
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: center;
-  padding: 8px 0;
+  padding: 10px 0;
   gap: 10px;
 }
 .icon-btn{
@@ -73,7 +69,7 @@
   height: 40px; width: auto; display: block; vertical-align: middle;
   image-rendering: smooth;
 }
-.brand__name{ font-size: 20px; font-weight: 700; color: #fff; letter-spacing: .02em; }
+.brand__name{ font-size: 20px; font-weight: 700; color: #fff; letter-spacing: .04em; }
 .header-actions{ justify-self: end; display: inline-flex; align-items: center; gap: 8px; }
 .link-auth{ color:#dcdcdc; text-decoration:none; font-size:13px; padding:4px 8px; border:1px solid transparent; }
 .link-auth:hover{ border-color:#333; }
@@ -109,6 +105,14 @@
 .btn--accent:hover{filter:brightness(.95)}
 .btn.btn--block{ text-transform: uppercase; letter-spacing: .08em; padding-block: 12px; }
 
+/* Buttons – disabled state (global) */
+.btn[disabled], .pager__btn[disabled]{
+  opacity: .5;
+  cursor: not-allowed;
+  filter: none;
+}
+.btn--accent[disabled]{ background: rgba(255,255,255,.18); border-color: rgba(255,255,255,.18); }
+
 /* hero */
 .hero{background:var(--near-black);padding:36px 0 28px}
 .hero__title, .section-title{
@@ -116,7 +120,8 @@
 }
 .hero__title br, .section-title br { content: ""; }
 .hero__desc{color:var(--muted);max-width:660px;margin:10px 0 18px;line-height:1.5}
-.hero__gallery{margin-top:22px;display:grid;grid-template-columns:1fr 1fr;gap:14px}
+
+/* (gộp) hero gallery */
 .hero__gallery{
   margin-top:22px;
   display:grid;
@@ -134,6 +139,24 @@
   display:block;
 }
 
+/* ===== Hero Carousel ===== */
+.hero__carousel{
+  position: relative;
+  display: grid;
+  grid-template-columns: auto 1fr auto; /* [‹] [grid] [›] */
+  align-items: center;
+  gap: 10px;
+}
+.hero__arrow{
+  width: 40px; height: 40px;
+  display: grid; place-items: center;
+  border-radius: 50%;
+  border: 1px solid #333;
+  background: #1a1a1a; color: #fff;
+  cursor: pointer; transition: .2s;
+}
+.hero__arrow:hover{ background:#222; }
+.hero__arrow[disabled]{ opacity:.4; cursor:not-allowed; }
 
 /* products */
 .selected {
@@ -142,11 +165,20 @@
   padding:44px 0 64px;
 }
 
-.card-grid {
-  margin-top:18px;
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:16px;
+/* ===== Card grid (auto-fit) ===== */
+.card-grid{
+  --card-min: 220px;  /* khớp TS: minCard = 220 */
+  --gap: 16px;        /* khớp TS: gap = 16 */
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(var(--card-min), 1fr));
+  gap: var(--gap);
+  margin-top: 18px;
+}
+@media (max-width: 640px){
+  .card-grid{ --card-min: 180px; }
+}
+@media (min-width: 1200px){
+  .card-grid{ --card-min: 260px; }
 }
 
 .card {
@@ -154,9 +186,9 @@
   background:#fff;
   display:flex;
   flex-direction:column;
+  box-shadow: 0 2px 10px rgba(0,0,0,.03);
   transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
 }
-
 .card:hover {
   transform: translateY(-2px);
   box-shadow: 0 10px 28px rgba(0,0,0,.06);
@@ -169,14 +201,11 @@
   background-size: contain;     /* giữ nguyên tỉ lệ, không crop */
   background-repeat: no-repeat; /* không lặp ảnh */
   background-position: center;  /* căn giữa */
-  background-color: #fff;       /* nền trắng lấp khoảng trống */
+  background-color: #fafafa;    /* nền nhạt tách khỏi page */
   border-bottom:1px solid #eee;
   transition: transform .3s ease;
 }
-
-.card:hover .card__media {
-  transform: scale(1.02);
-}
+.card:hover .card__media { transform: scale(1.02); }
 
 .card__body {
   padding:12px;
@@ -193,28 +222,19 @@
   line-height:1.25;
 }
 
-.price {
-  font-weight:700;
-}
+.price { font-weight:700; }
 
-/* bạn có thể bỏ product-card img nếu dùng background-image */
-
+/* Nếu dùng <img> trong card */
 .product-card img {
   width: 100%;
-  height: 300px;       /* chỉnh theo chiều cao mong muốn */
-  object-fit: contain; /* ảnh fit vào khung, không bị crop */
-  background-color: #fff; /* nền trắng lấp khoảng trống */
+  height: 300px;
+  object-fit: contain;
+  background-color: #fff;
   display: block;
   margin: 0 auto;
 }
 
-
-.chip-row {
-  display:flex;
-  flex-wrap:wrap;
-  gap:6px;
-}
-
+.chip-row { display:flex; flex-wrap:wrap; gap:6px; }
 .chip {
   font-size:11px;
   border:1px solid #ddd;
@@ -223,7 +243,6 @@
   background:#fafafa;
   color:#333;
 }
-
 
 /* stores */
 .places{background:#0f0f10;padding:48px 0}
@@ -255,9 +274,9 @@
 .site-footer a{color:#d6d6d6;text-decoration:none}
 .footer-bottom{display:flex;justify-content:space-between;align-items:center;padding-top:16px;border-top:1px solid #222}
 
-/* responsive grids */
+/* responsive grids (keep only those not overriding card-grid) */
 @media (min-width:768px){
-  .card-grid{grid-template-columns:repeat(3,1fr)}
+  /* .card-grid: auto-fit đã lo; không ép repeat(3,1fr) nữa */
   .split{grid-template-columns:1.2fr 1fr;align-items:center}
   .journal-grid{grid-template-columns:repeat(3,1fr)}
   .footer-grid{grid-template-columns:1.2fr 1fr 1fr 1fr}
@@ -266,9 +285,6 @@
 /* ===== Layout rhythm ===== */
 .section-pad { padding-block: 72px; }
 @media (min-width: 1024px){ .section-pad { padding-block: 96px; } }
-@media (min-width: 1200px){ .container{ max-width: 1280px; } }
-.header-inner{ padding: 10px 0; }
-.brand__name{ letter-spacing: .04em; }
 
 /* A11y focus */
 a:focus-visible, button:focus-visible, .btn:focus-visible {
@@ -276,39 +292,34 @@ a:focus-visible, button:focus-visible, .btn:focus-visible {
   outline-offset: 2px;
   border-radius: 4px;
 }
+/* Focus ring rõ hơn trên nền sáng (.selected) */
+.selected :is(a,button,.btn):focus-visible{ outline-color:#111; }
 
 /* ===== Respect reduced motion (global) ===== */
 @media (prefers-reduced-motion: reduce){
   * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
 }
 
-
 /* =========================================================
    ==============  POSTER COVER (no-stuck)  =================
    ========================================================= */
-
-/* Poster hiển thị phủ toàn màn hình */
 .poster-cover{
   position: fixed; inset: 0; z-index: 9999;
   display: grid; place-items: center;
   background: #000; overflow: hidden;
-  pointer-events: auto;                 /* nhận click khi đang hiện */
+  pointer-events: auto;
   /* 0) vào (0.7s)  1) pause (1.0s)  2) ra (0.8s) */
   animation:
     poster-in-up 700ms cubic-bezier(.2,.7,.2,1) both,
     cover-out-up 800ms cubic-bezier(.2,.7,.2,1) 1000ms forwards;
 }
-
-/* Khi showCover=false -> HTML gán class .hide */
 .poster-cover.hide,
 .poster-cover.force-off{
   opacity: 0 !important;
   visibility: hidden !important;
-  pointer-events: none !important;      /* KHÔNG chặn click trang dưới */
+  pointer-events: none !important;
   transition: opacity .25s ease;
 }
-
-/* Nội dung poster */
 .poster-media{
   width: min(86vw, 980px);
   max-height: 80vh;
@@ -325,20 +336,15 @@ a:focus-visible, button:focus-visible, .btn:focus-visible {
   mix-blend-mode: screen; opacity: .95;
 }
 .poster-title span{ color: var(--accent); }
-
-/* Keyframes poster */
 @keyframes poster-in-up {
   from { opacity: 0; transform: translateY(28px); filter: blur(6px); }
   to   { opacity: 1; transform: translateY(0);   filter: blur(0);  }
 }
-@keyframes cover-out-up {
-  to { opacity: 0; transform: translateY(-24px); }
-}
-
-/* Tôn trọng Reduce Motion */
+@keyframes cover-out-up { to { opacity: 0; transform: translateY(-24px); } }
 @media (prefers-reduced-motion: reduce){
   .poster-cover{ animation: cover-out-up 300ms ease 300ms forwards; }
 }
+
 /* ===== Accessories Paging ===== */
 .pager {
   display: flex;
@@ -347,47 +353,25 @@ a:focus-visible, button:focus-visible, .btn:focus-visible {
   gap: 16px;
   margin-top: 20px;
 }
-
-.pager__info {
-  font-size: 14px;
-  font-weight: 500;
-  color: #111;
-}
-
+.pager__info { font-size: 14px; font-weight: 500; color: #111; }
 .pager__btn {
-  width: 36px;
-  height: 36px;
+  width: 36px; height: 36px;
   border-radius: 50%;
   border: 1px solid #111;
-  background: transparent;
-  color: #111;
-  font-size: 18px;
-  line-height: 1;     /* quan trọng để bỏ caret cảm giác “text-input” */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s ease;
+  background: transparent; color: #111;
+  font-size: 18px; line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all 0.2s ease;
 }
+.pager__btn:hover { background: #111; color: #fff; }
 
-.pager__btn:hover {
-  background: #111;
-  color: #fff;
-}
-
-.pager__btn[disabled] {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-/* Ngăn caret xuất hiện trên toàn site trừ input & textarea */
-*:not(input):not(textarea) {
+/* Ngăn caret xuất hiện trên toàn site trừ input/textarea/contenteditable */
+*:not(input):not(textarea):not([contenteditable="true"]) {
   caret-color: transparent !important;
 }
-.center {
-  margin-top: 20px;
-  text-align: center;
-}
 
+/* CTA trung tâm */
+.center { margin-top: 20px; text-align: center; }
 .btn.btn--outline {
   padding: 10px 20px;
   border: 1px solid #111;
@@ -397,11 +381,8 @@ a:focus-visible, button:focus-visible, .btn:focus-visible {
   letter-spacing: .05em;
   transition: all .2s ease;
 }
+.btn.btn--outline:hover { background: #111; color: #fff; }
 
-.btn.btn--outline:hover {
-  background: #111;
-  color: #fff;
-}
 /* ===== Cookie banner – fixed bottom card ===== */
 .cookie{
   position: fixed;
@@ -409,12 +390,11 @@ a:focus-visible, button:focus-visible, .btn:focus-visible {
   z-index: 9998;
   display: flex;
   justify-content: center;
-  padding: 12px;                                      /* khoảng đệm ngoài card */
+  padding: 12px;
   padding-bottom: calc(12px + env(safe-area-inset-bottom));
-  background: transparent;                            /* không che nền toàn trang */
-  pointer-events: none;                               /* không chặn click ngoài card */
+  background: transparent;
+  pointer-events: none;
 }
-
 .cookie__panel{
   width: min(100%, 980px);
   margin: 0 8px;
@@ -424,23 +404,11 @@ a:focus-visible, button:focus-visible, .btn:focus-visible {
   border-radius: 12px;
   box-shadow: 0 12px 40px rgba(0,0,0,.35);
   padding: 16px 18px;
-  pointer-events: auto;                               /* nhận click bên trong card */
+  pointer-events: auto;
 }
-
-/* tiêu đề & mô tả */
-.cookie__title{
-  margin: 0 0 6px;
-  font-size: 16px; font-weight: 700;
-}
-.cookie__text{
-  margin: 0 0 12px;
-  color: #bdbdbd; line-height: 1.5;
-}
-
-/* cụm nút */
-.cookie__actions{
-  display: flex; gap: 10px; flex-wrap: wrap;
-}
+.cookie__title{ margin: 0 0 6px; font-size: 16px; font-weight: 700; }
+.cookie__text{ margin: 0 0 12px; color: #bdbdbd; line-height: 1.5; }
+.cookie__actions{ display: flex; gap: 10px; flex-wrap: wrap; }
 .cookie__actions .btn{
   padding: 8px 12px;
   border: 1px solid #333;
@@ -449,12 +417,10 @@ a:focus-visible, button:focus-visible, .btn:focus-visible {
   letter-spacing: .04em;
 }
 .cookie__actions .btn:hover{ background:#1b1d20; }
-.cookie__actions .btn:first-child{                   /* ĐỒNG Ý nổi bật hơn */
+.cookie__actions .btn:first-child{
   background:#eaeaea; color:#111; border-color:#eaeaea;
 }
 .cookie__actions .btn:first-child:hover{ background:#dcdcdc; }
-
-/* mobile: card full-bleed đẹp mắt */
 @media (max-width: 640px){
   .cookie{
     padding: 8px;
@@ -467,8 +433,3 @@ a:focus-visible, button:focus-visible, .btn:focus-visible {
   }
   .cookie__actions{ gap: 8px; }
 }
-
-
-
-
-

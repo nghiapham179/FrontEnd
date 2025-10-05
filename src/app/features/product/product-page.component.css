@@ -87,6 +87,44 @@
 .hero__gallery img{ width:100%; aspect-ratio: 16 / 9; height:auto; object-fit: cover; object-position: 50% 50%; border:1px solid #222; border-radius:12px; display:block; }
 
 /* products */
+/* Lưới card tự fill cột theo bề rộng */
+.card-grid {
+  --card-min: 220px;  /* min width 1 card */
+  --gap: 16px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(var(--card-min), 1fr));
+  gap: var(--gap);
+  margin-top: 18px;
+}
+
+/* Filter 3 cột, rút xuống mobile tự động */
+.filter-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+  max-width: 780px;
+}
+.filter-grid input,
+.filter-grid select {
+  padding: 10px;
+  border: 1px solid #e1e1e1;
+}
+
+@media (max-width: 640px) {
+  .filter-grid { grid-template-columns: 1fr; }
+}
+
+/* Nhãn hết hàng */
+.chip--oos {
+  margin-left: 8px;
+  background: #fff3f3;
+  border: 1px solid #ffd9d9;
+  color: #c00;
+}
+
+/* Card tuỳ bạn đã có style; giữ nguyên class cũ */
+/* .card, .card__media, .btn ... */
+
 .selected { background:#fff; color:#111; padding:44px 0 64px; }
 .card-grid { margin-top:18px; display:grid; grid-template-columns:1fr 1fr; gap:16px; }
 .card { border:1px solid #eee; background:#fff; display:flex; flex-direction:column; transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease; }
