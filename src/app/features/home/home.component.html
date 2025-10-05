@@ -207,7 +207,8 @@
         <article class="story" *ngFor="let it of paged; trackBy: trackById">
           <a class="story__media" [style.background-image]="'url(' + it.image + ')'" href="#" [attr.aria-label]="it.name"></a>
           <h3 class="story__title">{{ it.name }}</h3>
-          <p class="story__meta">{{ it.price | number:'1.0-0' }}đ — {{ it.tags?.[0] || 'Accessory' }}</p>
+          <p class="story__meta">{{ it.price | number:'1.0-0' }}đ — {{ it.tags[0] || 'Accessory' }}</p>
+
         </article>
       </div>
 
