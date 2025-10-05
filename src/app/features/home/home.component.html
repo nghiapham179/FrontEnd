@@ -1,11 +1,22 @@
-<!-- POSTER COVER (không dùng *ngIf để tránh kẹt) -->
+<!-- POSTER COVER (tránh *ngIf để không kẹt animation) -->
 <section
   class="poster-cover"
+  role="dialog"
+  aria-modal="true"
+  [attr.aria-hidden]="!showCover ? 'true' : 'false'"
   [class.hide]="!showCover"
   [class.force-off]="forceOff"
   (animationend)="onCoverAnimEnd($event)"
 >
-  <img class="poster-media" src="assets/Phone/IPhone.jpg" alt="TechNoX poster" />
+  <img
+    class="poster-media"
+    src="assets/Phone/IPhone.jpg"
+    alt="TechNoX poster"
+    width="1200"
+    height="800"
+    decoding="async"
+    fetchpriority="high"
+  />
   <h1 class="poster-title">TECHNO<span>X</span></h1>
   <!-- <button class="poster-skip" type="button" (click)="skipCover()">Skip</button> -->
 </section>
@@ -13,16 +24,28 @@
 <!-- HEADER -->
 <header class="site-header">
   <div class="container header-inner">
-    <button class="icon-btn" type="button" (click)="toggleMenu()" aria-label="Open menu">☰</button>
+    <!-- Nút menu: thêm aria-controls/expanded -->
+    <button
+      class="icon-btn"
+      type="button"
+      (click)="toggleMenu()"
+      aria-label="Mở menu"
+      aria-controls="mobileMenu"
+      [attr.aria-expanded]="mobileMenuOpen ? 'true' : 'false'"
+    >
+      ☰
+    </button>
 
     <!-- LOGO -->
-    <a class="brand" routerLink="/">
+    <a class="brand" routerLink="/" aria-label="Trang chủ TechNoX">
       <img
         class="brand__logo"
         src="assets/Phone/Logo.png"
         alt="TechNoX"
-        width="200" height="40"
-        decoding="async" fetchpriority="high"
+        width="200"
+        height="40"
+        decoding="async"
+        fetchpriority="high"
       />
       <span class="brand__name">TechNoX</span>
     </a>
@@ -30,23 +53,31 @@
     <div class="header-actions">
       <a class="link-auth" routerLink="/login">Đăng nhập</a>
       <a class="btn btn--accent btn-auth" routerLink="/register">Đăng ký</a>
-      <a class="cart" routerLink="/cart" aria-label="Giỏ hàng">giỏ hàng (0)</a>
+      <a class="cart" routerLink="/cart" aria-label="Giỏ hàng">Giỏ hàng (0)</a>
     </div>
   </div>
 </header>
 
 <!-- MOBILE MENU -->
-<nav class="mobile-menu" [class.open]="mobileMenuOpen" (click)="closeMenu()">
+<nav
+  class="mobile-menu"
+  id="mobileMenu"
+  [class.open]="mobileMenuOpen"
+  (click)="closeMenu()"
+  aria-label="Menu di động"
+>
+  <!-- Ngăn click xuyên -->
   <div class="mobile-menu__panel" (click)="$event.stopPropagation()">
-    <button class="mobile-menu__close" type="button" (click)="closeMenu()">✕</button>
+    <button class="mobile-menu__close" type="button" (click)="closeMenu()" aria-label="Đóng menu">✕</button>
     <ul>
       <li><a routerLink="/shop" (click)="closeMenu()">Điện thoại</a></li>
       <li><a routerLink="/accessories" (click)="closeMenu()">Phụ kiện</a></li>
       <li><a routerLink="/deals" (click)="closeMenu()">Khuyến mãi</a></li>
       <li><a routerLink="/stores" (click)="closeMenu()">Cửa hàng</a></li>
       <li><a routerLink="/news" (click)="closeMenu()">Tin tức</a></li>
+      <!-- FIX: thiếu dấu () trong closeMenu -->
       <li><a routerLink="/about" (click)="closeMenu()">Về chúng tôi</a></li>
-      <li class="divider"></li>
+      <li class="divider" role="separator" aria-hidden="true"></li>
       <li><a routerLink="/login" (click)="closeMenu()">Đăng nhập</a></li>
       <li><a routerLink="/register" (click)="closeMenu()">Đăng ký</a></li>
     </ul>
@@ -63,62 +94,68 @@
         Bán lẻ điện thoại chính hãng. Bảo hành 12–24 tháng. Trả góp 0%,
         giao nhanh trong ngày, đổi trả dễ dàng.
       </p>
-      <a class="btn btn--accent" href="#">MUA NGAY</a>
+      <a class="btn btn--accent" href="#" aria-label="Mua ngay">MUA NGAY</a>
 
+      <!-- Hero gallery: ảnh đầu ưu tiên cao, ảnh sau lazy -->
       <div class="hero__gallery">
-        <img src="assets/Phone/IPhone.jpg"  alt="Flagship phone" width="1200" height="800" loading="eager" />
-        <img src="assets/Phone/Iphone1.jpg" alt="Flagship phone"  width="1200" height="800" loading="lazy" />
+        <img
+          src="assets/Phone/IPhone.jpg"
+          alt="Flagship phone"
+          width="1200"
+          height="800"
+          loading="eager"
+          decoding="async"
+        />
+        <img
+          src="assets/Phone/Iphone1.jpg"
+          alt="Flagship phone"
+          width="1200"
+          height="800"
+          loading="lazy"
+          decoding="async"
+        />
       </div>
     </div>
   </section>
 
-  <!-- SẢN PHẨM NỔI BẬT -->
   <!-- SẢN PHẨM NỔI BẬT -->
   <section class="selected section-pad">
     <div class="container selected__inner">
       <p class="eyebrow eyebrow--gold">Dòng sản phẩm nổi bật</p>
       <h2 class="section-title">ĐIỆN THOẠI<br />ĐƯỢC CHỌN LỌC</h2>
 
-      <div class="card-grid">
-        <article class="card" *ngFor="let p of pagedFeatured">
-          <a class="card__media"
-             [style.background-image]="'url(' + p.image + ')'"
-             [attr.aria-label]="p.name"></a>
+      <!-- #heroGrid: TS ước lượng cột -> heroPageSize -->
+      <div #heroGrid class="card-grid">
+        <article class="card" *ngFor="let p of heroPaged; trackBy: trackById">
+          <a
+            class="card__media"
+            [style.background-image]="'url(' + p.image + ')'"
+            [attr.aria-label]="p.name"
+            href="#"
+          ></a>
           <div class="card__body">
             <h3 class="card__title">{{ p.name }}</h3>
-            <div class="chip-row">
+            <div class="chip-row" *ngIf="p.tags?.length">
               <span class="chip" *ngFor="let t of p.tags">{{ t }}</span>
             </div>
             <p class="price">Từ {{ p.price | number:'1.0-0' }}đ</p>
-            <button class="btn btn--block" type="button">THÊM VÀO GIỎ</button>
+            <button class="btn btn--block" type="button" (click)="add(p)">THÊM VÀO GIỎ</button>
           </div>
         </article>
       </div>
 
-      <!-- Pager -->
-      <div class="pager">
-        <button class="pager__btn" (click)="prevFeatured()" [disabled]="featuredPage === 1">
-          <span>←</span>
-        </button>
-
-        <span class="pager__info">Trang {{ featuredPage }} / {{ featuredTotalPages }}</span>
-
-        <button class="pager__btn" (click)="nextFeatured()" [disabled]="featuredPage === featuredTotalPages">
-          <span>→</span>
-        </button>
+      <!-- Pager: thêm aria-disabled -->
+      <div class="pager" role="navigation" aria-label="Phân trang sản phẩm nổi bật">
+        <button class="pager__btn" type="button" (click)="heroPrev()" [disabled]="heroPage === 1" [attr.aria-disabled]="heroPage === 1">←</button>
+        <span class="pager__info">Trang {{ heroPage }} / {{ heroTotalPages }}</span>
+        <button class="pager__btn" type="button" (click)="heroNext()" [disabled]="heroPage === heroTotalPages" [attr.aria-disabled]="heroPage === heroTotalPages">→</button>
       </div>
-
-
 
       <div class="center">
         <a class="btn btn--outline" routerLink="/accessories">XEM THÊM</a>
       </div>
-
-    </div> <!-- <- thiếu thẻ này -->
+    </div>
   </section>
-
-
-
 
   <!-- LAPTOP -->
   <section class="laptop-intro section-pad">
@@ -140,7 +177,7 @@
             Trình duyệt của bạn không hỗ trợ video.
           </video>
 
-          <button class="mute-btn" (click)="toggleMute(heroVideo)">
+          <button class="mute-btn" type="button" (click)="toggleMute(heroVideo)" aria-label="Bật/tắt âm thanh video">
             {{ isMuted ? '🔇' : '🔊' }}
           </button>
         </div>
@@ -159,29 +196,26 @@
     </div>
   </section>
 
-
-
-
-
   <!-- PHỤ KIỆN -->
   <section class="journal section-pad accessories">
     <div class="container">
       <p class="eyebrow eyebrow--gold">Sản phẩm kèm theo</p>
       <h2 class="section-title">PHỤ KIỆN</h2>
 
-      <div class="journal-grid">
-        <article class="story" *ngFor="let it of pagedAccessories">
-          <a class="story__media" [style.background-image]="'url(' + it.image + ')'"></a>
+      <!-- #catalogGrid: TS ước lượng cột -> pageSize -->
+      <div #catalogGrid class="journal-grid">
+        <article class="story" *ngFor="let it of paged; trackBy: trackById">
+          <a class="story__media" [style.background-image]="'url(' + it.image + ')'" href="#" [attr.aria-label]="it.name"></a>
           <h3 class="story__title">{{ it.name }}</h3>
-          <p class="story__meta">{{ it.price | number:'1.0-0' }}đ — {{ it.tag }}</p>
+          <p class="story__meta">{{ it.price | number:'1.0-0' }}đ — {{ it.tags?.[0] || 'Accessory' }}</p>
         </article>
       </div>
 
       <!-- Pager -->
-      <div class="pager">
-        <button class="pager__btn" (click)="prevPage()" [disabled]="page === 1">←</button>
+      <div class="pager" role="navigation" aria-label="Phân trang phụ kiện">
+        <button class="pager__btn" type="button" (click)="prevPage()" [disabled]="page === 1" [attr.aria-disabled]="page === 1">←</button>
         <span class="pager__info">Trang {{ page }} / {{ totalPages }}</span>
-        <button class="pager__btn" (click)="nextPage()" [disabled]="page === totalPages">→</button>
+        <button class="pager__btn" type="button" (click)="nextPage()" [disabled]="page === totalPages" [attr.aria-disabled]="page === totalPages">→</button>
       </div>
 
       <div class="center">
@@ -190,13 +224,11 @@
     </div>
   </section>
 
-
-
   <!-- NEWSLETTER -->
   <section class="newsletter">
     <div class="container newsletter__inner">
       <h3>Nhận ưu đãi &amp; voucher hàng tuần</h3>
-      <form class="newsletter__form" (submit)="$event.preventDefault()">
+      <form class="newsletter__form" (submit)="$event.preventDefault()" aria-label="Đăng ký nhận email khuyến mãi">
         <input type="email" placeholder="Email của bạn" required autocomplete="email" />
         <button class="btn" type="submit">ĐĂNG KÝ</button>
       </form>
@@ -207,9 +239,9 @@
 
 <!-- FOOTER -->
 <footer class="site-footer">
-  <div class="container footer-grid">
+  <div class="container footer-grid" role="contentinfo">
     <div>
-      <div class="brand brand--footer">TechNoX</div>
+      <div class="brand brand--footer" aria-label="TechNoX">TechNoX</div>
       <p class="muted small">Điện thoại chính hãng — giá tốt.</p>
     </div>
     <div>
@@ -240,7 +272,7 @@
 
   <div class="container footer-bottom">
     <span class="muted small">© TechNoX — All rights reserved</span>
-    <nav class="footer-links">
+    <nav class="footer-links" aria-label="Liên kết pháp lý">
       <a href="#">Privacy</a>
       <a href="#">Terms</a>
       <a href="#">Cookies</a>
@@ -249,7 +281,13 @@
 </footer>
 
 <!-- COOKIE BANNER -->
-<div class="cookie" *ngIf="cookieOpen" role="dialog" aria-live="polite" aria-label="Cookie preference">
+<div
+  class="cookie"
+  *ngIf="cookieOpen"
+  role="dialog"
+  aria-live="polite"
+  aria-label="Tùy chọn cookie"
+>
   <div class="cookie__panel">
     <h4 class="cookie__title">Cookie preference</h4>
     <p class="cookie__text">
