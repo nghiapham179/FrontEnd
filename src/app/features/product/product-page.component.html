@@ -1,0 +1,88 @@
+<section class="hero">
+  <div class="container">
+    <p class="eyebrow eyebrow--gold">New Arrivals</p>
+    <h1 class="section-title">Sản phẩm mới</h1>
+
+    <div class="hero__carousel">
+      <button class="hero__arrow left" (click)="heroPrev()" [disabled]="heroPage===1" aria-label="Trang trước">‹</button>
+
+      <div class="card-grid">
+        <article class="card" *ngFor="let p of heroPaged; trackBy: trackById">
+          <a class="card__media" [ngStyle]="bgImg(p.image)" aria-hidden="true"></a>
+          <div class="card__body">
+            <h3 class="card__title">{{ p.name }}</h3>
+            <div class="chip-row" *ngIf="p.tags?.length">
+              <span class="chip" *ngFor="let t of p.tags">{{ t }}</span>
+            </div>
+            <div><span class="price">{{ formatPrice(p.price) }}</span></div>
+            <button class="btn btn--accent btn--block" (click)="add(p)" [disabled]="!p.inStock">Thêm vào giỏ</button>
+          </div>
+        </article>
+      </div>
+
+      <button class="hero__arrow right" (click)="heroNext()" [disabled]="heroPage===heroTotalPages" aria-label="Trang sau">›</button>
+    </div>
+  </div>
+</section>
+
+
+
+<!-- DANH MỤC (filters + paging) -->
+<section class="selected">
+  <div class="container">
+    <p class="eyebrow">Danh mục</p>
+    <h2 class="section-title" style="font-size:clamp(28px,6vw,44px)">Tất cả sản phẩm</h2>
+
+    <!-- Bộ lọc -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;max-width:780px;">
+      <input
+        type="search"
+        placeholder="Tìm kiếm..."
+        [(ngModel)]="searchTerm"
+        (ngModelChange)="page = 1"
+        style="padding:10px;border:1px solid #e1e1e1"
+      />
+      <select [(ngModel)]="categoryFilter" (ngModelChange)="page = 1" style="padding:10px;border:1px solid #e1e1e1">
+        <option *ngFor="let c of categories" [value]="c">{{ c === 'all' ? 'Tất cả' : c }}</option>
+      </select>
+      <select [(ngModel)]="sortKey" (ngModelChange)="page = 1" style="padding:10px;border:1px solid #e1e1e1">
+        <option value="relevance">Mặc định</option>
+        <option value="priceAsc">Giá tăng dần</option>
+        <option value="priceDesc">Giá giảm dần</option>
+        <option value="nameAsc">Tên A → Z</option>
+      </select>
+    </div>
+
+    <!-- Lưới theo trang -->
+    <div class="card-grid" style="margin-top:18px;">
+      <article class="card" *ngFor="let p of paged; trackBy: trackById">
+        <a class="card__media" [ngStyle]="bgImg(p.image)" aria-hidden="true"></a>
+        <div class="card__body">
+          <h3 class="card__title">{{ p.name }}</h3>
+
+          <div class="chip-row" *ngIf="p.tags?.length">
+            <span class="chip" *ngFor="let t of p.tags">{{ t }}</span>
+          </div>
+
+          <div>
+            <span class="price">{{ formatPrice(p.price) }}</span>
+            <span *ngIf="!p.inStock" class="chip" style="margin-left:8px;background:#fff3f3;border-color:#ffd9d9;color:#c00;">
+              Hết hàng
+            </span>
+          </div>
+
+          <button class="btn btn--accent btn--block" (click)="add(p)" [disabled]="!p.inStock">
+            Thêm vào giỏ
+          </button>
+        </div>
+      </article>
+    </div>
+
+    <!-- Pager cho DANH MỤC -->
+    <div class="pager" *ngIf="totalPages > 1">
+      <button class="pager__btn" (click)="prevPage()" [disabled]="page===1">‹</button>
+      <div class="pager__info">Trang {{page}} / {{totalPages}}</div>
+      <button class="pager__btn" (click)="nextPage()" [disabled]="page===totalPages">›</button>
+    </div>
+  </div>
+</section>
