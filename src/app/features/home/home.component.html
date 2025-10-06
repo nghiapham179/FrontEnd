@@ -172,6 +172,44 @@
       </div>
     </div>
   </section>
+  <!-- LAPTOP -->
+  <section class="laptop-intro section-pad">
+    <div class="container">
+      <div class="split">
+        <div class="split__media">
+          <video
+            #heroVideo
+            class="hero-video"
+            autoplay
+            muted
+            loop
+            playsinline
+            preload="auto"
+            (error)="onVideoError($event)"
+            (canplay)="onVideoCanPlay()"
+          >
+            <source src="assets/Video/MacPro.mp4" type="video/mp4" />
+            Trình duyệt của bạn không hỗ trợ video.
+          </video>
+
+          <button class="mute-btn" type="button" (click)="toggleMute(heroVideo)" aria-label="Bật/tắt âm thanh video">
+            {{ isMuted ? '🔇' : '🔊' }}
+          </button>
+        </div>
+
+        <div class="split__content">
+          <p class="eyebrow">Laptop mới nhất</p>
+          <h2 class="section-title">KHÁM PHÁ CÁC DÒNG<br/>LAPTOP HIỆN ĐẠI</h2>
+          <p class="muted">
+            TechNoX mang đến cho bạn các mẫu laptop hiệu năng cao, thiết kế sang trọng,
+            phù hợp cho học tập, làm việc và giải trí.
+            Khám phá ngay để chọn cho mình chiếc laptop ưng ý.
+          </p>
+          <a class="btn btn--outline" href="#">TÌM HIỂU THÊM</a>
+        </div>
+      </div>
+    </div>
+  </section>
 
   <!-- PHỤ KIỆN -->
   <section class="journal section-pad accessories">
