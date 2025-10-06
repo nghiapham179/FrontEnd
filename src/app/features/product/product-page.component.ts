@@ -38,16 +38,19 @@ export class ProductPageComponent implements AfterViewInit {
     { id: 9, name: 'Bose QC Ultra',        price: 8_490_000, image: 'https://via.placeholder.com/1000x750?text=Bose+QC+Ultra',        category: 'Headphone', inStock: true },
   ];
 
-  /** ===== Responsive config ===== */
+  /** ===== Responsive config (hero) ===== */
   private minCard = 220;   // khớp CSS
   private gap = 16;
 
-  /** ===== HERO ===== */
+  /** ===== HERO (tối đa 3 khung, trượt 1 item/lần) ===== */
   private readonly HERO_MAX_COLS = 3; // tối đa 3 cột
   private heroRows = 1;
 
-  heroPageSize = 3;        // số khung đang hiển thị (tự tính theo bề rộng, <=3)
+  heroPageSize = 3;        // số khung hiển thị, auto theo bề rộng, nhưng <=3
   private heroStart = 0;   // index bắt đầu của cửa sổ trượt (circular)
+
+  @ViewChild('heroGrid', { static: false }) heroGrid!: ElementRef<HTMLDivElement>;
+  @ViewChild('catalogGrid', { static: false }) catalogGrid!: ElementRef<HTMLDivElement>;
 
   /** Dữ liệu ưu tiên "isNew", rỗng thì dùng toàn bộ */
   get heroAll(): Product[] {
@@ -67,16 +70,14 @@ export class ProductPageComponent implements AfterViewInit {
   }
 
   /** Điều hướng hero: trượt 1 sp/lần, hai chiều, vòng lặp */
-  heroNext(_ev?: Event): void {
+  heroNext(): void {
     const n = this.heroAll.length;
     if (n > this.heroPageSize) this.heroStart = (this.heroStart + 1) % n;
   }
-
-  heroPrev(_ev?: Event): void {
+  heroPrev(): void {
     const n = this.heroAll.length;
     if (n > this.heroPageSize) this.heroStart = (this.heroStart - 1 + n) % n;
   }
-
 
   /** ===== DANH MỤC / LỌC / SẮP XẾP / PHÂN TRANG ===== */
   searchTerm = '';
@@ -84,11 +85,7 @@ export class ProductPageComponent implements AfterViewInit {
   sortKey: SortKey = 'relevance';
 
   page = 1;
-  pageSize = 6; // auto theo bề rộng
-  private catalogRows = 2;
-
-  @ViewChild('heroGrid', { static: false }) heroGrid!: ElementRef<HTMLDivElement>;
-  @ViewChild('catalogGrid', { static: false }) catalogGrid!: ElementRef<HTMLDivElement>;
+  pageSize = 6; // luôn 6 sp/trang (CỐ ĐỊNH)
 
   get categories(): string[] {
     const set = new Set(this.products.map(p => p.category));
@@ -162,9 +159,8 @@ export class ProductPageComponent implements AfterViewInit {
     }
   }
 
+  /** CỐ ĐỊNH pageSize = 6: chỉ clamp page, không tính lại theo bề rộng */
   private recalcCatalogPageSize(): void {
-    const cols = this.estimateCols(this.catalogGrid?.nativeElement);
-    this.pageSize = Math.max(1, cols * this.catalogRows);
     this.page = Math.min(this.page, this.totalPages);
     this.page = Math.max(this.page, 1);
   }
@@ -174,6 +170,19 @@ export class ProductPageComponent implements AfterViewInit {
     const w = el.clientWidth;
     // Số cột ≈ (width + gap) / (minCard + gap)
     return Math.max(1, Math.floor((w + this.gap) / (this.minCard + this.gap)));
+  }
+
+  /* ===== Catalog pager buttons ===== */
+  nextPage(): void {
+    if (this.page < this.totalPages) this.page++;
+  }
+  prevPage(): void {
+    if (this.page > 1) this.page--;
+  }
+  // (tuỳ chọn)
+  goToPage(n: number): void {
+    const clamped = Math.max(1, Math.min(n, this.totalPages));
+    this.page = clamped;
   }
 
   /* ===== Helpers ===== */

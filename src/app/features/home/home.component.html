@@ -72,11 +72,11 @@
     <ul>
       <li><a routerLink="/shop" (click)="closeMenu()">Điện thoại</a></li>
       <li><a routerLink="/accessories" (click)="closeMenu()">Phụ kiện</a></li>
-      <li><a routerLink="/deals" (click)="closeMenu()">Khuyến mãi</a></li>
-      <li><a routerLink="/stores" (click)="closeMenu()">Cửa hàng</a></li>
-      <li><a routerLink="/news" (click)="closeMenu()">Tin tức</a></li>
+      <li><a routerLink="/laptop" (click)="closeMenu()">Laptop</a></li>
+      <li><a routerLink="/privacy" (click)="closeMenu()">Chính Sách</a></li>
+
       <!-- FIX: thiếu dấu () trong closeMenu -->
-      <li><a routerLink="/about" (click)="closeMenu()">Về chúng tôi</a></li>
+
       <li class="divider" role="separator" aria-hidden="true"></li>
       <li><a routerLink="/login" (click)="closeMenu()">Đăng nhập</a></li>
       <li><a routerLink="/register" (click)="closeMenu()">Đăng ký</a></li>
@@ -144,54 +144,31 @@
         </article>
       </div>
 
-      <!-- Pager: thêm aria-disabled -->
-      <div class="pager" role="navigation" aria-label="Phân trang sản phẩm nổi bật">
-        <button class="pager__btn" type="button" (click)="heroPrev()" [disabled]="heroPage === 1" [attr.aria-disabled]="heroPage === 1">←</button>
-        <span class="pager__info">Trang {{ heroPage }} / {{ heroTotalPages }}</span>
-        <button class="pager__btn" type="button" (click)="heroNext()" [disabled]="heroPage === heroTotalPages" [attr.aria-disabled]="heroPage === heroTotalPages">→</button>
-      </div>
+      <!-- PHẦN PAGER + NÚT XEM THÊM (cân giữa) -->
+      <div class="section-cta">
+        <nav class="pager" role="navigation" aria-label="Phân trang sản phẩm nổi bật">
+          <button
+            class="pager__btn"
+            type="button"
+            (click)="heroPrev()"
+            [disabled]="heroPage === 1"
+            [attr.aria-disabled]="heroPage === 1"
+          >←</button>
 
-      <div class="center">
-        <a class="btn btn--outline" routerLink="/accessories">XEM THÊM</a>
-      </div>
-    </div>
-  </section>
+          <span class="pager__info">Trang {{ heroPage }} / {{ heroTotalPages }}</span>
 
-  <!-- LAPTOP -->
-  <section class="laptop-intro section-pad">
-    <div class="container">
-      <div class="split">
-        <div class="split__media">
-          <video
-            #heroVideo
-            class="hero-video"
-            autoplay
-            muted
-            loop
-            playsinline
-            preload="auto"
-            (error)="onVideoError($event)"
-            (canplay)="onVideoCanPlay()"
-          >
-            <source src="assets/Video/MacPro.mp4" type="video/mp4" />
-            Trình duyệt của bạn không hỗ trợ video.
-          </video>
+          <button
+            class="pager__btn"
+            type="button"
+            (click)="heroNext()"
+            [disabled]="heroPage === heroTotalPages"
+            [attr.aria-disabled]="heroPage === heroTotalPages"
+          >→</button>
+        </nav>
 
-          <button class="mute-btn" type="button" (click)="toggleMute(heroVideo)" aria-label="Bật/tắt âm thanh video">
-            {{ isMuted ? '🔇' : '🔊' }}
-          </button>
-        </div>
-
-        <div class="split__content">
-          <p class="eyebrow">Laptop mới nhất</p>
-          <h2 class="section-title">KHÁM PHÁ CÁC DÒNG<br/>LAPTOP HIỆN ĐẠI</h2>
-          <p class="muted">
-            TechNoX mang đến cho bạn các mẫu laptop hiệu năng cao, thiết kế sang trọng,
-            phù hợp cho học tập, làm việc và giải trí.
-            Khám phá ngay để chọn cho mình chiếc laptop ưng ý.
-          </p>
-          <a class="btn btn--outline" href="#">TÌM HIỂU THÊM</a>
-        </div>
+        <a class="btn btn--black view-all" [routerLink]="['/san-pham']">
+          XEM TOÀN BỘ SẢN PHẨM
+        </a>
       </div>
     </div>
   </section>
@@ -208,19 +185,32 @@
           <a class="story__media" [style.background-image]="'url(' + it.image + ')'" href="#" [attr.aria-label]="it.name"></a>
           <h3 class="story__title">{{ it.name }}</h3>
           <p class="story__meta">{{ it.price | number:'1.0-0' }}đ — {{ it.tags[0] || 'Accessory' }}</p>
-
         </article>
       </div>
 
-      <!-- Pager -->
-      <div class="pager" role="navigation" aria-label="Phân trang phụ kiện">
-        <button class="pager__btn" type="button" (click)="prevPage()" [disabled]="page === 1" [attr.aria-disabled]="page === 1">←</button>
-        <span class="pager__info">Trang {{ page }} / {{ totalPages }}</span>
-        <button class="pager__btn" type="button" (click)="nextPage()" [disabled]="page === totalPages" [attr.aria-disabled]="page === totalPages">→</button>
-      </div>
+      <!-- PAGER + NÚT XEM THÊM PHỤ KIỆN -->
+      <div class="section-cta">
+        <nav class="pager" role="navigation" aria-label="Phân trang phụ kiện">
+          <button
+            class="pager__btn"
+            type="button"
+            (click)="prevPage()"
+            [disabled]="page === 1"
+            [attr.aria-disabled]="page === 1"
+          >←</button>
 
-      <div class="center">
-        <a class="btn btn--outline" routerLink="/shop">XEM THÊM</a>
+          <span class="pager__info">Trang {{ page }} / {{ totalPages }}</span>
+
+          <button
+            class="pager__btn"
+            type="button"
+            (click)="nextPage()"
+            [disabled]="page === totalPages"
+            [attr.aria-disabled]="page === totalPages"
+          >→</button>
+        </nav>
+
+        <a class="btn btn--black view-all" routerLink="/shop">XEM THÊM</a>
       </div>
     </div>
   </section>

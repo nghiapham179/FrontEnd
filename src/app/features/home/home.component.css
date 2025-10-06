@@ -287,3 +287,66 @@ a:focus-visible, button:focus-visible, .btn:focus-visible {
 @media (min-width:1200px){
   .container{ max-width: 1280px; }
 }
+.btn--black {
+  background: #000;
+  color: #fff;
+  border: 1px solid #000;
+  padding: 10px 22px;
+  font-weight: 600;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  transition: background .2s ease, color .2s ease;
+}
+
+.btn--black:hover {
+  background: #111;
+  border-color: #111;
+}
+.section-cta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.pager {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.pager__btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid #111;
+  background: #fff;
+  color: #111;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.pager__info {
+  min-width: 110px;
+  text-align: center;
+  font-weight: 500;
+}
+
+.btn--black {
+  background: #111;
+  color: #fff;
+  border: 1px solid #222;
+  padding: 12px 22px;
+  font-weight: 700;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  transition: background .2s ease;
+}
+
+.btn--black:hover {
+  background: #1a1a1a;
+}

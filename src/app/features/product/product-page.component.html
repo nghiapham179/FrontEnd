@@ -4,11 +4,11 @@
     <h1 class="section-title">Sản phẩm mới</h1>
 
     <div class="hero__carousel">
-      <!-- KHÔNG dùng heroPage nữa -->
+      <!-- Arrows: trượt 1 sản phẩm, disable nếu tổng <= số khung -->
       <button
         class="hero__arrow left"
         type="button"
-        (click)="heroPrev($event)"
+        (click)="heroPrev()"
         [disabled]="heroAll.length <= heroPageSize"
         aria-label="Trang trước">‹</button>
 
@@ -30,13 +30,12 @@
       <button
         class="hero__arrow right"
         type="button"
-        (click)="heroNext($event)"
+        (click)="heroNext()"
         [disabled]="heroAll.length <= heroPageSize"
         aria-label="Trang sau">›</button>
     </div>
   </div>
 </section>
-
 
 <!-- DANH MỤC (filters + paging) -->
 <section class="selected">
@@ -63,6 +62,25 @@
       </select>
     </div>
 
+    <!-- Pager cho DANH MỤC -->
+    <div class="pager" *ngIf="totalPages > 1">
+      <button
+        class="pager__btn"
+        type="button"
+        (click)="prevPage()"
+        [disabled]="page===1"
+        aria-label="Trang trước">‹</button>
+
+      <div class="pager__info">Trang {{page}} / {{totalPages}}</div>
+
+      <button
+        class="pager__btn"
+        type="button"
+        (click)="nextPage()"
+        [disabled]="page===totalPages"
+        aria-label="Trang sau">›</button>
+    </div>
+
     <!-- Lưới theo trang -->
     <div #catalogGrid class="card-grid">
       <article class="card" *ngFor="let p of paged; trackBy: trackById">
@@ -79,19 +97,11 @@
             <span *ngIf="!p.inStock" class="chip chip--oos">Hết hàng</span>
           </div>
 
-          <!-- UI-only: không xử lý click -->
           <button class="btn btn--accent btn--block" type="button" [disabled]="!p.inStock">
             Thêm vào giỏ
           </button>
         </div>
       </article>
-    </div>
-
-    <!-- Pager cho DANH MỤC (UI-only: không click) -->
-    <div class="pager" *ngIf="totalPages > 1">
-      <button class="pager__btn" type="button" [disabled]="page===1">‹</button>
-      <div class="pager__info">Trang {{page}} / {{totalPages}}</div>
-      <button class="pager__btn" type="button" [disabled]="page===totalPages">›</button>
     </div>
   </div>
 </section>
