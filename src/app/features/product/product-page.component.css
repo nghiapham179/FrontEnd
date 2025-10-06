@@ -308,3 +308,19 @@ a:focus-visible, button:focus-visible, .btn:focus-visible {
   .hero__arrow.left  { transform: translate(-90%, -50%); }
   .hero__arrow.right { transform: translate(90%,  -50%); }
 }
+/* ===== HERO LAYOUT – tách hẳn khỏi .card-grid global ===== */
+.hero .hero-grid{
+  display:grid;
+  gap:16px;
+  grid-auto-rows:1fr;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  margin-top:18px;
+}
+@media (max-width:1024px){ .hero .hero-grid{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media (max-width:640px){  .hero .hero-grid{ grid-template-columns:1fr; } }
+
+
+/* Card trong hero (nhẹ, đồng bộ với style hiện có) */
+.hero .card{ display:flex; flex-direction:column; background:#fff; color:#111; border:1px solid #eee; }
+.hero .card__media{ display:block; aspect-ratio:4/3; background-size:contain; background-position:center; background-repeat:no-repeat; border-bottom:1px solid #eee; }
+.hero .card__body{ padding:12px; display:flex; flex-direction:column; gap:8px; }

@@ -25,7 +25,7 @@ type SortKey = 'relevance' | 'priceAsc' | 'priceDesc' | 'nameAsc';
   styleUrls: ['./product-page.component.css'],
 })
 export class ProductPageComponent implements AfterViewInit {
-  /* ======== DỮ LIỆU DEMO (có thể override qua @Input) ======== */
+  /* ======== DEMO DATA (có thể @Input override) ======== */
   @Input() products: Product[] = [
     { id: 1, name: 'Beats Studio Pro',     price: 5_990_000, image: 'https://via.placeholder.com/1000x750?text=Beats+Studio+Pro',     category: 'Headphone', inStock: true,  tags: ['ANC','USB-C'], isNew: true },
     { id: 2, name: 'MX Mechanical Mini',   price: 3_190_000, image: 'https://via.placeholder.com/1000x750?text=MX+Mechanical+Mini',   category: 'Keyboard', inStock: true,  tags: ['Low-profile','Backlight'], isNew: true },
@@ -38,38 +38,57 @@ export class ProductPageComponent implements AfterViewInit {
     { id: 9, name: 'Bose QC Ultra',        price: 8_490_000, image: 'https://via.placeholder.com/1000x750?text=Bose+QC+Ultra',        category: 'Headphone', inStock: true },
   ];
 
-  /** ===== Responsive config (nhớ khớp CSS .card-grid) ===== */
-  private minCard = 220;   // tương ứng --card-min trong CSS (nếu có)
-  private gap = 16;        // tương ứng --gap
-  private heroRows = 1;    // hero hiển thị 1 hàng
-  private catalogRows = 2; // lưới danh mục 2 hàng / trang
+  /** ===== Responsive config ===== */
+  private minCard = 220;   // khớp CSS
+  private gap = 16;
 
-  @ViewChild('heroGrid', { static: false }) heroGrid!: ElementRef<HTMLDivElement>;
-  @ViewChild('catalogGrid', { static: false }) catalogGrid!: ElementRef<HTMLDivElement>;
+  /** ===== HERO ===== */
+  private readonly HERO_MAX_COLS = 3; // tối đa 3 cột
+  private heroRows = 1;
 
-  /* ===== HERO ===== */
-  heroPage = 1;
-  heroPageSize = 3; // sẽ auto tính lại theo bề rộng
+  heroPageSize = 3;        // số khung đang hiển thị (tự tính theo bề rộng, <=3)
+  private heroStart = 0;   // index bắt đầu của cửa sổ trượt (circular)
 
+  /** Dữ liệu ưu tiên "isNew", rỗng thì dùng toàn bộ */
   get heroAll(): Product[] {
     const list = this.products.filter(p => p.isNew);
     return list.length ? list : this.products;
   }
-  get heroTotalPages(): number {
-    return Math.max(1, Math.ceil(this.heroAll.length / this.heroPageSize));
-  }
-  get heroPaged(): Product[] {
-    const start = (this.heroPage - 1) * this.heroPageSize;
-    return this.heroAll.slice(start, start + this.heroPageSize);
+
+  /** Cửa sổ hiển thị k phần tử từ heroStart (vòng lặp) */
+  get heroWindow(): Product[] {
+    const data = this.heroAll;
+    const n = data.length;
+    if (!n) return [];
+    const k = Math.min(this.heroPageSize, n);
+    const out: Product[] = [];
+    for (let i = 0; i < k; i++) out.push(data[(this.heroStart + i) % n]);
+    return out;
   }
 
-  /* ===== DANH MỤC / LỌC / SẮP XẾP / PHÂN TRANG ===== */
+  /** Điều hướng hero: trượt 1 sp/lần, hai chiều, vòng lặp */
+  heroNext(_ev?: Event): void {
+    const n = this.heroAll.length;
+    if (n > this.heroPageSize) this.heroStart = (this.heroStart + 1) % n;
+  }
+
+  heroPrev(_ev?: Event): void {
+    const n = this.heroAll.length;
+    if (n > this.heroPageSize) this.heroStart = (this.heroStart - 1 + n) % n;
+  }
+
+
+  /** ===== DANH MỤC / LỌC / SẮP XẾP / PHÂN TRANG ===== */
   searchTerm = '';
   categoryFilter: string = 'all';
   sortKey: SortKey = 'relevance';
 
   page = 1;
-  pageSize = 6; // auto tính lại theo bề rộng
+  pageSize = 6; // auto theo bề rộng
+  private catalogRows = 2;
+
+  @ViewChild('heroGrid', { static: false }) heroGrid!: ElementRef<HTMLDivElement>;
+  @ViewChild('catalogGrid', { static: false }) catalogGrid!: ElementRef<HTMLDivElement>;
 
   get categories(): string[] {
     const set = new Set(this.products.map(p => p.category));
@@ -90,19 +109,11 @@ export class ProductPageComponent implements AfterViewInit {
     }
 
     switch (this.sortKey) {
-      case 'priceAsc':
-        list.sort((a, b) => a.price - b.price);
-        break;
-      case 'priceDesc':
-        list.sort((a, b) => b.price - a.price);
-        break;
-      case 'nameAsc':
-        list.sort((a, b) => a.name.localeCompare(b.name));
-        break;
+      case 'priceAsc':  list.sort((a, b) => a.price - b.price); break;
+      case 'priceDesc': list.sort((a, b) => b.price - a.price); break;
+      case 'nameAsc':   list.sort((a, b) => a.name.localeCompare(b.name)); break;
       case 'relevance':
-      default:
-        // giữ thứ tự gốc làm "relevance" đơn giản
-        break;
+      default: break;
     }
     return list;
   }
@@ -115,9 +126,8 @@ export class ProductPageComponent implements AfterViewInit {
     return this.filtered.slice(start, start + this.pageSize);
   }
 
-  /* ====== LIFECYCLE & RESIZE ====== */
+  /* ===== LIFECYCLE & RESIZE ===== */
   ngAfterViewInit(): void {
-    // Delay 1 tick để ViewChild có kích thước thực
     setTimeout(() => {
       this.recalcHeroPageSize();
       this.recalcCatalogPageSize();
@@ -130,50 +140,31 @@ export class ProductPageComponent implements AfterViewInit {
     this.recalcCatalogPageSize();
   }
 
-  /* ====== HÀM ĐƯỢC TEMPLATE GỌI KHI THAY ĐỔI BỘ LỌC/SẮP XẾP ====== */
   recalcAndSlice(): void {
-    // Với getter filtered/paged, chỉ cần đồng bộ lại pageSize & clamp current page
     this.recalcHeroPageSize();
     this.recalcCatalogPageSize();
   }
 
-  /* ====== HERO PAGINATION ====== */
-  heroNext(): void {
-    if (this.heroPage < this.heroTotalPages) {
-      this.heroPage++;
-    }
-  }
-  heroPrev(): void {
-    if (this.heroPage > 1) {
-      this.heroPage--;
-    }
-  }
-
-  /* ====== CATALOG PAGINATION ====== */
-  nextPage(): void {
-    if (this.page < this.totalPages) {
-      this.page++;
-    }
-  }
-  prevPage(): void {
-    if (this.page > 1) {
-      this.page--;
-    }
-  }
-
-  /* ====== RESPONSIVE CALCULATIONS ====== */
+  /* ===== Responsive calculations ===== */
   private recalcHeroPageSize(): void {
-    const cols = this.estimateCols(this.heroGrid?.nativeElement);
-    this.heroPageSize = Math.max(1, cols * this.heroRows);
-    // clamp trang hiện tại
-    this.heroPage = Math.min(this.heroPage, this.heroTotalPages);
-    this.heroPage = Math.max(this.heroPage, 1);
+    const rawCols = this.estimateCols(this.heroGrid?.nativeElement);
+    const cols = Math.min(this.HERO_MAX_COLS, rawCols);
+    const newSize = Math.max(1, cols * this.heroRows);
+
+    if (newSize !== this.heroPageSize) {
+      // giữ trung tâm tương đối khi số khung thay đổi
+      const n = Math.max(1, this.heroAll.length);
+      const center = (this.heroStart + Math.floor(this.heroPageSize / 2)) % n;
+      this.heroPageSize = newSize;
+      this.heroStart = (center - Math.floor(this.heroPageSize / 2) + n) % n;
+    } else {
+      this.heroPageSize = newSize;
+    }
   }
 
   private recalcCatalogPageSize(): void {
     const cols = this.estimateCols(this.catalogGrid?.nativeElement);
     this.pageSize = Math.max(1, cols * this.catalogRows);
-    // clamp trang hiện tại
     this.page = Math.min(this.page, this.totalPages);
     this.page = Math.max(this.page, 1);
   }
@@ -185,16 +176,14 @@ export class ProductPageComponent implements AfterViewInit {
     return Math.max(1, Math.floor((w + this.gap) / (this.minCard + this.gap)));
   }
 
-  /* ====== HELPERS ====== */
+  /* ===== Helpers ===== */
   formatPrice(v: number): string {
     return v.toLocaleString('vi-VN') + ' ₫';
   }
   bgImg(url: string) {
     return { 'background-image': `url('${url}')` };
   }
-  add(_p: Product) {
-    // TODO: handle add to cart
-  }
+  add(_p: Product) { /* TODO: handle add to cart */ }
 
   trackById: TrackByFunction<Product> = (_i, item) => item.id;
 }

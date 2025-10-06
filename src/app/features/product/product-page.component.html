@@ -4,11 +4,17 @@
     <h1 class="section-title">Sản phẩm mới</h1>
 
     <div class="hero__carousel">
-      <!-- Nút mũi tên: chỉ hiển thị trạng thái, không có click -->
-      <button class="hero__arrow left" type="button" [disabled]="heroPage===1" aria-label="Trang trước">‹</button>
+      <!-- KHÔNG dùng heroPage nữa -->
+      <button
+        class="hero__arrow left"
+        type="button"
+        (click)="heroPrev($event)"
+        [disabled]="heroAll.length <= heroPageSize"
+        aria-label="Trang trước">‹</button>
 
-      <div #heroGrid class="card-grid">
-        <article class="card" *ngFor="let p of heroPaged; trackBy: trackById">
+      <!-- LƯỚI HERO -->
+      <div #heroGrid class="hero-grid">
+        <article class="card" *ngFor="let p of heroWindow; trackBy: trackById">
           <a class="card__media" [ngStyle]="bgImg(p.image)" aria-hidden="true"></a>
           <div class="card__body">
             <h3 class="card__title">{{ p.name }}</h3>
@@ -16,16 +22,21 @@
               <span class="chip" *ngFor="let t of p.tags">{{ t }}</span>
             </div>
             <div><span class="price">{{ formatPrice(p.price) }}</span></div>
-            <!-- UI-only: không xử lý click -->
             <button class="btn btn--accent btn--block" type="button" [disabled]="!p.inStock">Thêm vào giỏ</button>
           </div>
         </article>
       </div>
 
-      <button class="hero__arrow right" type="button" [disabled]="heroPage===heroTotalPages" aria-label="Trang sau">›</button>
+      <button
+        class="hero__arrow right"
+        type="button"
+        (click)="heroNext($event)"
+        [disabled]="heroAll.length <= heroPageSize"
+        aria-label="Trang sau">›</button>
     </div>
   </div>
 </section>
+
 
 <!-- DANH MỤC (filters + paging) -->
 <section class="selected">

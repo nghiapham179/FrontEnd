@@ -159,12 +159,13 @@ a:focus-visible, button:focus-visible, .btn:focus-visible {
 .newsletter input{ background:#0e0e0e; border:1px solid #333; color:#eaeaea; padding:10px 12px; width:100%; }
 .newsletter button{ background:#eaeaea; color:#111; border-color:#eaeaea; }
 
-/* ====== Footer ====== */
+/* ====== Footer (mobile dọc, desktop ngang) ====== */
 .site-footer{ background:#0f0f10; padding:40px 0 16px; }
-.footer-grid{ display:grid; grid-template-columns:1fr; gap:16px; }
+.footer-grid{ display:grid; grid-template-columns:1fr; gap:16px; } /* mobile: 1 cột */
 .footer-title{ color:#fff; font-size:14px; margin:0 0 8px; letter-spacing:.04em; text-transform:uppercase; }
 .site-footer ul{ padding:0; margin:0; list-style:none; display:grid; gap:6px; }
-.site-footer a{ color:#d6d6d6; text-decoration:none; }
+.site-footer a{ color:#d6d6d6; text-decoration:none; transition: color .18s ease, opacity .18s ease; }
+.site-footer a:hover{ color:#fff; }
 .footer-bottom{ display:flex; gap:12px; flex-wrap:wrap; justify-content:space-between; align-items:center; padding-top:16px; border-top:1px solid #222; }
 
 /* ====== Layout rhythm ====== */
@@ -265,11 +266,21 @@ a:focus-visible, button:focus-visible, .btn:focus-visible {
   .journal-grid{ grid-template-columns:repeat(3,1fr); }
 
   .section-pad { padding-block: 72px; }
+
+  /* Footer: NGANG từ tablet trở lên */
+  .footer-grid{
+    grid-template-columns: repeat(4, minmax(180px, 1fr));
+    gap: 20px 28px;           /* hàng x cột */
+    align-items: start;
+  }
+  .footer-title{ font-size:13px; margin-bottom:10px; }
+  .site-footer ul{ gap:8px; }
 }
 
 /* ≥1024px */
 @media (min-width:1024px){
   .section-pad { padding-block: 96px; }
+  .footer-grid{ gap:24px 36px; } /* thoáng hơn trên desktop */
 }
 
 /* ≥1200px */
