@@ -1,0 +1,73 @@
+<section class="detail section-pad">
+  <div class="container">
+
+    <button class="icon-btn back" (click)="goBack()">← Quay lại</button>
+
+    <h1 class="section-title">{{ product?.name || 'Sản phẩm' }}</h1>
+    <p class="eyebrow" *ngIf="product?.category">
+      <span class="eyebrow eyebrow--gold">{{ product?.category }}</span>
+    </p>
+
+    <!-- trạng thái -->
+    <div class="state" *ngIf="loading">Đang tải…</div>
+    <div class="state" *ngIf="!loading && notFound">
+      Không tìm thấy sản phẩm. <a routerLink="/product" class="btn btn--outline">Về danh sách</a>
+    </div>
+
+    <!-- nội dung chi tiết -->
+    <div class="detail-card" *ngIf="!loading && !notFound && product as p">
+      <div class="gallery">
+        <!-- Ảnh chính -->
+        <div class="split__media">
+          <img class="hero-video" [src]="p.image || p.gallery?.[0]" [alt]="p.name">
+        </div>
+
+        <!-- Thumbnail (nếu có gallery) -->
+        <div class="thumbs" *ngIf="p.gallery?.length">
+          <button
+            class="thumb"
+            *ngFor="let g of p.gallery"
+            type="button"
+            (click)="p.image = g">
+            <img [src]="g" [alt]="p.name">
+          </button>
+        </div>
+      </div>
+
+      <div class="info">
+        <div class="price-line">
+          <span class="price">{{ p.price | number:'1.0-0' }} đ</span>
+          <span class="chip" *ngIf="p.stock !== undefined">
+            {{ p.stock! > 0 ? (p.stock + ' còn hàng') : 'Hết hàng' }}
+          </span>
+        </div>
+
+        <p class="desc" *ngIf="p.description; else noDesc">{{ p.description }}</p>
+        <ng-template #noDesc><p class="muted">Chưa có mô tả cho sản phẩm này.</p></ng-template>
+
+        <!-- các thuộc tính khác -->
+        <div class="kv" *ngFor="let entry of (p | keyvalue)">
+          <div class="kv__row"
+               *ngIf="!['id','name','price','description','image','gallery','category','stock'].includes(entry.key)">
+            <span class="kv__key">{{ entry.key }}</span>
+            <span class="kv__val">{{ entry.value }}</span>
+          </div>
+        </div>
+
+        <!-- CTA -->
+        <div class="buy">
+          <div class="qty">
+            <button (click)="dec()" aria-label="Giảm">−</button>
+            <input [value]="qty" readonly>
+            <button (click)="inc()" aria-label="Tăng">+</button>
+          </div>
+          <button class="btn btn--accent btn--block" (click)="addToCart()">Thêm vào giỏ</button>
+        </div>
+
+        <div class="center">
+          <a class="btn btn--outline" (click)="goBack()">Tiếp tục xem sản phẩm</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

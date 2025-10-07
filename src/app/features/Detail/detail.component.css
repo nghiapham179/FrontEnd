@@ -1,0 +1,61 @@
+/* Kế thừa palette & utilities từ stylesheet global của bạn */
+
+.detail { background: var(--black); color: #eaeaea; }
+
+/* Card chính: 2 cột (media | info) */
+.detail-card{
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 24px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px;
+  background: var(--near-black);
+}
+
+@media (max-width: 900px){
+  .detail-card{ grid-template-columns: 1fr; }
+}
+
+/* Gallery khu vực trái */
+.gallery{ display: grid; gap: 10px; }
+.thumbs{ display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+.thumb{
+  border: 1px solid #222; background: #0f0f10; padding: 0; border-radius: 8px; overflow: hidden; cursor: pointer;
+}
+.thumb img{ width: 100%; aspect-ratio: 1 / 1; object-fit: cover; display: block; }
+
+/* Thông tin khu vực phải */
+.info{ display: grid; gap: 14px; align-content: start; }
+.price-line{ display: flex; align-items: center; gap: 10px; }
+.price{ font-weight: 800; font-size: 22px; color: #fff; }
+.chip{ font-size: 11px; border: 1px solid #333; padding: 4px 8px; border-radius: 999px; background: #151618; color: #eaeaea; }
+
+.desc{ color: var(--muted); line-height: 1.6; }
+
+/* key-value chi tiết thêm */
+.kv__row{
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 8px;
+  padding: 10px 0;
+  border-top: 1px dashed #222;
+  font-size: 14px;
+}
+.kv__key{ color: var(--muted); }
+.kv__val{ color: #fff; }
+
+/* số lượng + CTA */
+.buy{ display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: center; }
+.qty{ display: inline-flex; border:1px solid #222; border-radius: 8px; overflow: hidden; }
+.qty button{
+  all: unset; padding: 8px 12px; background:#151618; color:#eaeaea; cursor:pointer; border-right:1px solid #222;
+}
+.qty button:last-child{ border-right: none; }
+.qty input{
+  width: 48px; text-align: center; background:#0f0f10; color:#fff; border:none; outline:none;
+}
+
+/* back button nhỏ */
+.icon-btn.back{ border:1px solid #333; padding:6px 10px; border-radius:8px; color:#ddd; background:#151618; }
+.icon-btn.back:hover{ background:#1b1d20; }

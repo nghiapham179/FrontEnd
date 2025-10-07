@@ -196,3 +196,4 @@ export class ProductPageComponent implements AfterViewInit {
 
   trackById: TrackByFunction<Product> = (_i, item) => item.id;
 }
+
