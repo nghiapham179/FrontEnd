@@ -4,6 +4,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
 
 export interface Product {
   id: number;
@@ -20,12 +21,13 @@ type SortKey = 'relevance' | 'priceAsc' | 'priceDesc' | 'nameAsc';
 @Component({
   selector: 'app-product-page',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './product-page.component.html',
   styleUrls: ['./product-page.component.css'],
 })
 export class ProductPageComponent implements AfterViewInit {
-  /* ======== DEMO DATA (có thể @Input override) ======== */
+  constructor(private router: Router) {}
+
   @Input() products: Product[] = [
     { id: 1, name: 'Beats Studio Pro',     price: 5_990_000, image: 'https://via.placeholder.com/1000x750?text=Beats+Studio+Pro',     category: 'Headphone', inStock: true,  tags: ['ANC','USB-C'], isNew: true },
     { id: 2, name: 'MX Mechanical Mini',   price: 3_190_000, image: 'https://via.placeholder.com/1000x750?text=MX+Mechanical+Mini',   category: 'Keyboard', inStock: true,  tags: ['Low-profile','Backlight'], isNew: true },
@@ -38,27 +40,23 @@ export class ProductPageComponent implements AfterViewInit {
     { id: 9, name: 'Bose QC Ultra',        price: 8_490_000, image: 'https://via.placeholder.com/1000x750?text=Bose+QC+Ultra',        category: 'Headphone', inStock: true },
   ];
 
-  /** ===== Responsive config (hero) ===== */
-  private minCard = 220;   // khớp CSS
+  private minCard = 220;
   private gap = 16;
 
-  /** ===== HERO (tối đa 3 khung, trượt 1 item/lần) ===== */
-  private readonly HERO_MAX_COLS = 3; // tối đa 3 cột
+  private readonly HERO_MAX_COLS = 3;
   private heroRows = 1;
 
-  heroPageSize = 3;        // số khung hiển thị, auto theo bề rộng, nhưng <=3
-  private heroStart = 0;   // index bắt đầu của cửa sổ trượt (circular)
+  heroPageSize = 3;
+  private heroStart = 0;
 
   @ViewChild('heroGrid', { static: false }) heroGrid!: ElementRef<HTMLDivElement>;
   @ViewChild('catalogGrid', { static: false }) catalogGrid!: ElementRef<HTMLDivElement>;
 
-  /** Dữ liệu ưu tiên "isNew", rỗng thì dùng toàn bộ */
   get heroAll(): Product[] {
     const list = this.products.filter(p => p.isNew);
     return list.length ? list : this.products;
   }
 
-  /** Cửa sổ hiển thị k phần tử từ heroStart (vòng lặp) */
   get heroWindow(): Product[] {
     const data = this.heroAll;
     const n = data.length;
@@ -69,7 +67,6 @@ export class ProductPageComponent implements AfterViewInit {
     return out;
   }
 
-  /** Điều hướng hero: trượt 1 sp/lần, hai chiều, vòng lặp */
   heroNext(): void {
     const n = this.heroAll.length;
     if (n > this.heroPageSize) this.heroStart = (this.heroStart + 1) % n;
@@ -79,13 +76,12 @@ export class ProductPageComponent implements AfterViewInit {
     if (n > this.heroPageSize) this.heroStart = (this.heroStart - 1 + n) % n;
   }
 
-  /** ===== DANH MỤC / LỌC / SẮP XẾP / PHÂN TRANG ===== */
   searchTerm = '';
   categoryFilter: string = 'all';
   sortKey: SortKey = 'relevance';
 
   page = 1;
-  pageSize = 6; // luôn 6 sp/trang (CỐ ĐỊNH)
+  pageSize = 6;
 
   get categories(): string[] {
     const set = new Set(this.products.map(p => p.category));
@@ -94,16 +90,10 @@ export class ProductPageComponent implements AfterViewInit {
 
   get filtered(): Product[] {
     let list = [...this.products];
+    if (this.categoryFilter !== 'all') list = list.filter(p => p.category === this.categoryFilter);
 
-    if (this.categoryFilter !== 'all') {
-      list = list.filter(p => p.category === this.categoryFilter);
-    }
     const q = this.searchTerm.trim().toLowerCase();
-    if (q) {
-      list = list.filter(p =>
-        (p.name + ' ' + (p.tags?.join(' ') ?? '')).toLowerCase().includes(q)
-      );
-    }
+    if (q) list = list.filter(p => (p.name + ' ' + (p.tags?.join(' ') ?? '')).toLowerCase().includes(q));
 
     switch (this.sortKey) {
       case 'priceAsc':  list.sort((a, b) => a.price - b.price); break;
@@ -115,15 +105,12 @@ export class ProductPageComponent implements AfterViewInit {
     return list;
   }
 
-  get totalPages(): number {
-    return Math.max(1, Math.ceil(this.filtered.length / this.pageSize));
-  }
+  get totalPages(): number { return Math.max(1, Math.ceil(this.filtered.length / this.pageSize)); }
   get paged(): Product[] {
     const start = (this.page - 1) * this.pageSize;
     return this.filtered.slice(start, start + this.pageSize);
   }
 
-  /* ===== LIFECYCLE & RESIZE ===== */
   ngAfterViewInit(): void {
     setTimeout(() => {
       this.recalcHeroPageSize();
@@ -131,25 +118,21 @@ export class ProductPageComponent implements AfterViewInit {
     });
   }
 
-  @HostListener('window:resize')
-  onResize() {
+  @HostListener('window:resize') onResize() {
     this.recalcHeroPageSize();
     this.recalcCatalogPageSize();
   }
-
   recalcAndSlice(): void {
     this.recalcHeroPageSize();
     this.recalcCatalogPageSize();
   }
 
-  /* ===== Responsive calculations ===== */
   private recalcHeroPageSize(): void {
     const rawCols = this.estimateCols(this.heroGrid?.nativeElement);
     const cols = Math.min(this.HERO_MAX_COLS, rawCols);
     const newSize = Math.max(1, cols * this.heroRows);
 
     if (newSize !== this.heroPageSize) {
-      // giữ trung tâm tương đối khi số khung thay đổi
       const n = Math.max(1, this.heroAll.length);
       const center = (this.heroStart + Math.floor(this.heroPageSize / 2)) % n;
       this.heroPageSize = newSize;
@@ -159,7 +142,6 @@ export class ProductPageComponent implements AfterViewInit {
     }
   }
 
-  /** CỐ ĐỊNH pageSize = 6: chỉ clamp page, không tính lại theo bề rộng */
   private recalcCatalogPageSize(): void {
     this.page = Math.min(this.page, this.totalPages);
     this.page = Math.max(this.page, 1);
@@ -168,32 +150,20 @@ export class ProductPageComponent implements AfterViewInit {
   private estimateCols(el?: HTMLDivElement): number {
     if (!el) return 1;
     const w = el.clientWidth;
-    // Số cột ≈ (width + gap) / (minCard + gap)
     return Math.max(1, Math.floor((w + this.gap) / (this.minCard + this.gap)));
   }
 
-  /* ===== Catalog pager buttons ===== */
-  nextPage(): void {
-    if (this.page < this.totalPages) this.page++;
-  }
-  prevPage(): void {
-    if (this.page > 1) this.page--;
-  }
-  // (tuỳ chọn)
-  goToPage(n: number): void {
-    const clamped = Math.max(1, Math.min(n, this.totalPages));
-    this.page = clamped;
-  }
+  nextPage(): void { if (this.page < this.totalPages) this.page++; }
+  prevPage(): void { if (this.page > 1) this.page--; }
+  goToPage(n: number): void { this.page = Math.max(1, Math.min(n, this.totalPages)); }
 
-  /* ===== Helpers ===== */
-  formatPrice(v: number): string {
-    return v.toLocaleString('vi-VN') + ' ₫';
+  formatPrice(v: number): string { return v.toLocaleString('vi-VN') + ' ₫'; }
+  bgImg(url: string) { return { 'background-image': `url('${url}')` }; }
+
+  /* Điều hướng chi tiết */
+  viewProduct(p: Product): void {
+    this.router.navigate(['/product', p.id], { state: { product: p } });
   }
-  bgImg(url: string) {
-    return { 'background-image': `url('${url}')` };
-  }
-  add(_p: Product) { /* TODO: handle add to cart */ }
 
   trackById: TrackByFunction<Product> = (_i, item) => item.id;
 }
-

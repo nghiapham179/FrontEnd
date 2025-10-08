@@ -6,10 +6,9 @@ import { ProductPageComponent } from './features/product/product-page.component'
 export const routes: Routes = [
   { path: '', redirectTo: 'products', pathMatch: 'full' },
 
-  // Danh sách sản phẩm
   { path: 'products', component: ProductPageComponent },
 
-  // Trang chi tiết sản phẩm (standalone component)
+  // ✅ CHÚ Ý đường dẫn đúng file: './features/Detail/detail.component'
   {
     path: 'product/:id',
     loadComponent: () =>

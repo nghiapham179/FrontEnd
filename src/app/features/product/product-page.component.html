@@ -4,53 +4,51 @@
     <h1 class="section-title">Sản phẩm mới</h1>
 
     <div class="hero__carousel">
-      <!-- Arrows: trượt 1 sản phẩm, disable nếu tổng <= số khung -->
-      <button
-        class="hero__arrow left"
-        type="button"
-        (click)="heroPrev()"
-        [disabled]="heroAll.length <= heroPageSize"
-        aria-label="Trang trước">‹</button>
+      <button class="hero__arrow left" type="button"
+              (click)="heroPrev()" [disabled]="heroAll.length <= heroPageSize" aria-label="Trang trước">‹</button>
 
-      <!-- LƯỚI HERO -->
       <div #heroGrid class="hero-grid">
         <article class="card" *ngFor="let p of heroWindow; trackBy: trackById">
-          <a class="card__media" [ngStyle]="bgImg(p.image)" aria-hidden="true"></a>
+          <a class="card__media"
+             [routerLink]="['/product', p.id]"
+             [state]="{ product: p }"
+             [ngStyle]="bgImg(p.image)" aria-hidden="true"></a>
+
           <div class="card__body">
-            <h3 class="card__title">{{ p.name }}</h3>
+            <h3 class="card__title">
+              <a [routerLink]="['/product', p.id]" [state]="{ product: p }">{{ p.name }}</a>
+            </h3>
+
             <div class="chip-row" *ngIf="p.tags?.length">
               <span class="chip" *ngFor="let t of p.tags">{{ t }}</span>
             </div>
+
             <div><span class="price">{{ formatPrice(p.price) }}</span></div>
-            <button class="btn btn--accent btn--block" type="button" [disabled]="!p.inStock">Thêm vào giỏ</button>
+
+            <button class="btn btn--accent btn--block" type="button" [disabled]="!p.inStock">
+              Thêm vào giỏ
+            </button>
+            <!-- Hoặc dùng hàm TS:
+            <button class="btn btn--ghost btn--block" type="button" (click)="viewProduct(p)">Xem chi tiết</button>
+            -->
           </div>
         </article>
       </div>
 
-      <button
-        class="hero__arrow right"
-        type="button"
-        (click)="heroNext()"
-        [disabled]="heroAll.length <= heroPageSize"
-        aria-label="Trang sau">›</button>
+      <button class="hero__arrow right" type="button"
+              (click)="heroNext()" [disabled]="heroAll.length <= heroPageSize" aria-label="Trang sau">›</button>
     </div>
   </div>
 </section>
 
-<!-- DANH MỤC (filters + paging) -->
 <section class="selected">
   <div class="container">
     <p class="eyebrow">Danh mục</p>
     <h2 class="section-title" style="font-size:clamp(28px,6vw,44px)">Tất cả sản phẩm</h2>
 
-    <!-- Bộ lọc -->
     <div class="filter-grid">
-      <input
-        type="search"
-        placeholder="Tìm kiếm..."
-        [(ngModel)]="searchTerm"
-        (ngModelChange)="page = 1; recalcAndSlice()"
-      />
+      <input type="search" placeholder="Tìm kiếm..."
+             [(ngModel)]="searchTerm" (ngModelChange)="page = 1; recalcAndSlice()" />
       <select [(ngModel)]="categoryFilter" (ngModelChange)="page = 1; recalcAndSlice()">
         <option *ngFor="let c of categories" [value]="c">{{ c === 'all' ? 'Tất cả' : c }}</option>
       </select>
@@ -62,31 +60,23 @@
       </select>
     </div>
 
-    <!-- Pager cho DANH MỤC -->
     <div class="pager" *ngIf="totalPages > 1">
-      <button
-        class="pager__btn"
-        type="button"
-        (click)="prevPage()"
-        [disabled]="page===1"
-        aria-label="Trang trước">‹</button>
-
+      <button class="pager__btn" type="button" (click)="prevPage()" [disabled]="page===1" aria-label="Trang trước">‹</button>
       <div class="pager__info">Trang {{page}} / {{totalPages}}</div>
-
-      <button
-        class="pager__btn"
-        type="button"
-        (click)="nextPage()"
-        [disabled]="page===totalPages"
-        aria-label="Trang sau">›</button>
+      <button class="pager__btn" type="button" (click)="nextPage()" [disabled]="page===totalPages" aria-label="Trang sau">›</button>
     </div>
 
-    <!-- Lưới theo trang -->
     <div #catalogGrid class="card-grid">
       <article class="card" *ngFor="let p of paged; trackBy: trackById">
-        <a class="card__media" [ngStyle]="bgImg(p.image)" aria-hidden="true"></a>
+        <a class="card__media"
+           [routerLink]="['/product', p.id]"
+           [state]="{ product: p }"
+           [ngStyle]="bgImg(p.image)" aria-hidden="true"></a>
+
         <div class="card__body">
-          <h3 class="card__title">{{ p.name }}</h3>
+          <h3 class="card__title">
+            <a [routerLink]="['/product', p.id]" [state]="{ product: p }">{{ p.name }}</a>
+          </h3>
 
           <div class="chip-row" *ngIf="p.tags?.length">
             <span class="chip" *ngFor="let t of p.tags">{{ t }}</span>
@@ -100,6 +90,7 @@
           <button class="btn btn--accent btn--block" type="button" [disabled]="!p.inStock">
             Thêm vào giỏ
           </button>
+          <!-- Hoặc: <button class="btn btn--ghost btn--block" type="button" (click)="viewProduct(p)">Xem chi tiết</button> -->
         </div>
       </article>
     </div>

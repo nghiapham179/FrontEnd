@@ -1,73 +1,81 @@
-<section class="detail section-pad">
+<section class="detail section-pad bv-font">
   <div class="container">
-
-    <button class="icon-btn back" (click)="goBack()">← Quay lại</button>
-
-    <h1 class="section-title">{{ product?.name || 'Sản phẩm' }}</h1>
-    <p class="eyebrow" *ngIf="product?.category">
-      <span class="eyebrow eyebrow--gold">{{ product?.category }}</span>
-    </p>
-
-    <!-- trạng thái -->
-    <div class="state" *ngIf="loading">Đang tải…</div>
-    <div class="state" *ngIf="!loading && notFound">
-      Không tìm thấy sản phẩm. <a routerLink="/product" class="btn btn--outline">Về danh sách</a>
+    <div class="detail-top">
+      <button class="icon-btn back" type="button" (click)="goBack()" aria-label="Quay lại">← Quay lại</button>
     </div>
 
-    <!-- nội dung chi tiết -->
-    <div class="detail-card" *ngIf="!loading && !notFound && product as p">
-      <div class="gallery">
-        <!-- Ảnh chính -->
-        <div class="split__media">
-          <img class="hero-video" [src]="p.image || p.gallery?.[0]" [alt]="p.name">
+    <div class="detail-card">
+      <div class="detail-grid" *ngIf="!notFound && product as p; else notFoundTpl">
+        <!-- LEFT -->
+        <div class="detail-left">
+          <figure class="gallery">
+            <div class="gallery__stage">
+              <img class="gallery__img" [src]="p.image || p.gallery?.[0]" [alt]="p.name" />
+            </div>
+            <figcaption class="gallery__thumbs" *ngIf="p.gallery?.length">
+              <button class="thumb" type="button"
+                      *ngFor="let g of p.gallery"
+                      (click)="p.image = g"
+                      [class.active]="(p.image || p.gallery?.[0]) === g">
+                <img [src]="g" [alt]="p.name" />
+              </button>
+            </figcaption>
+          </figure>
         </div>
 
-        <!-- Thumbnail (nếu có gallery) -->
-        <div class="thumbs" *ngIf="p.gallery?.length">
-          <button
-            class="thumb"
-            *ngFor="let g of p.gallery"
-            type="button"
-            (click)="p.image = g">
-            <img [src]="g" [alt]="p.name">
-          </button>
-        </div>
+        <!-- RIGHT -->
+        <aside class="detail-right">
+          <header class="pd-head">
+            <h1 class="title">{{ p.name }}</h1>
+            <div class="pd-meta">
+              <span class="chip" *ngIf="p.inStock; else oosChip">Còn hàng</span>
+              <ng-template #oosChip><span class="chip chip--oos">Hết hàng</span></ng-template>
+            </div>
+          </header>
+
+          <section class="panel">
+            <h2 class="panel__title">Giá tiền & Ưu đãi</h2>
+            <div class="price-line">
+              <span class="price--current">{{ formatPrice(p.price) }}</span>
+              <ng-container *ngIf="p.oldPrice">
+                <span class="price--old">{{ formatPrice(p.oldPrice) }}</span>
+              </ng-container>
+            </div>
+            <p class="promo" *ngIf="hasPromo">{{ promoText }}</p>
+            <div class="chip-row" *ngIf="p.tags?.length">
+              <span class="chip" *ngFor="let t of p.tags">{{ t }}</span>
+            </div>
+          </section>
+
+          <section class="panel">
+            <h2 class="panel__title">Số lượng</h2>
+            <div class="qty" role="group" aria-label="Chọn số lượng">
+              <button type="button" (click)="dec()" aria-label="Giảm">−</button>
+              <input [value]="qty" readonly aria-live="polite" />
+              <button type="button" (click)="inc()" aria-label="Tăng">+</button>
+            </div>
+          </section>
+
+          <div class="actions">
+            <button class="btn btn--ghost action" type="button" (click)="buyNow()" [disabled]="!p.inStock">Mua ngay</button>
+            <button class="btn btn--accent action" type="button" (click)="addToCart()" [disabled]="!p.inStock">Thêm vào giỏ hàng</button>
+          </div>
+        </aside>
       </div>
 
-      <div class="info">
-        <div class="price-line">
-          <span class="price">{{ p.price | number:'1.0-0' }} đ</span>
-          <span class="chip" *ngIf="p.stock !== undefined">
-            {{ p.stock! > 0 ? (p.stock + ' còn hàng') : 'Hết hàng' }}
-          </span>
-        </div>
-
-        <p class="desc" *ngIf="p.description; else noDesc">{{ p.description }}</p>
+      <section class="product-info" *ngIf="product">
+        <h2 class="info-title">Thông tin sản phẩm</h2>
+        <p class="desc" *ngIf="product.description; else noDesc">{{ product.description }}</p>
         <ng-template #noDesc><p class="muted">Chưa có mô tả cho sản phẩm này.</p></ng-template>
+      </section>
 
-        <!-- các thuộc tính khác -->
-        <div class="kv" *ngFor="let entry of (p | keyvalue)">
-          <div class="kv__row"
-               *ngIf="!['id','name','price','description','image','gallery','category','stock'].includes(entry.key)">
-            <span class="kv__key">{{ entry.key }}</span>
-            <span class="kv__val">{{ entry.value }}</span>
-          </div>
+      <ng-template #notFoundTpl>
+        <div class="state">
+          Không tìm thấy sản phẩm.
+          <a routerLink="/products" class="btn btn--outline">Về danh sách</a>
         </div>
-
-        <!-- CTA -->
-        <div class="buy">
-          <div class="qty">
-            <button (click)="dec()" aria-label="Giảm">−</button>
-            <input [value]="qty" readonly>
-            <button (click)="inc()" aria-label="Tăng">+</button>
-          </div>
-          <button class="btn btn--accent btn--block" (click)="addToCart()">Thêm vào giỏ</button>
-        </div>
-
-        <div class="center">
-          <a class="btn btn--outline" (click)="goBack()">Tiếp tục xem sản phẩm</a>
-        </div>
-      </div>
+      </ng-template>
     </div>
   </div>
 </section>
+

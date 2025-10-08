@@ -2,16 +2,19 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
-interface Product {
-  id: string | number;
+export interface Product {
+  id: number;
   name: string;
-  price: number;
+  price: number;          // giá hiện bán
+  oldPrice?: number;      // giá gốc (nếu có, sẽ hiện gạch)
+  discountPercent?: number; // nếu không có oldPrice, có thể set % ở đây
+  image: string;
+  category: string;
+  inStock: boolean;
+  tags?: string[];
   description?: string;
-  image?: string;      // URL ảnh chính
-  gallery?: string[];  // (tuỳ chọn) nhiều ảnh
-  category?: string;
-  stock?: number;
-  [key: string]: any;
+  gallery?: string[];
+  [k: string]: any;
 }
 
 @Component({
@@ -26,59 +29,51 @@ export class DetailComponent implements OnInit {
   private router = inject(Router);
 
   product?: Product;
-  loading = true;
   notFound = false;
-
   qty = 1;
 
   ngOnInit(): void {
-    // Ưu tiên lấy từ navigation state
     const st = history.state?.product as Product | undefined;
-    if (st?.id !== undefined && st !== null) {
-      this.product = st;
-      this.loading = false;
-      return;
+    if (st && st.id != null) { this.product = st; return; }
+    const id = Number(this.route.snapshot.paramMap.get('id'));
+    this.notFound = Number.isNaN(id) || !st;
+  }
+
+  // ====== helpers (giá, promo) ======
+  get hasPromo(): boolean {
+    const p = this.product;
+    return !!(p && (p.oldPrice || p.discountPercent));
+  }
+  get promoText(): string {
+    const p = this.product;
+    if (!p) return '';
+    if (p.oldPrice && p.oldPrice > p.price) {
+      const percent = Math.round((1 - p.price / p.oldPrice) * 100);
+      return `Giảm ${percent}%`;
     }
-
-    // Nếu không có state -> lấy id từ route và tìm trong localStorage
-    this.route.paramMap.subscribe((p) => {
-      const id = p.get('id');
-      this.lookupProduct(id);
-    });
+    if (p.discountPercent) return `Giảm ${p.discountPercent}%`;
+    return '';
+  }
+  formatPrice(v: number | undefined | null): string {
+    if (v == null) return '';
+    return v.toLocaleString('vi-VN') + ' ₫';
   }
 
-  private lookupProduct(id: string | null) {
-    const list = this.readLocalProducts();
-    if (id && list?.length) {
-      const found = list.find(p => String(p.id) === String(id));
-      if (found) {
-        this.product = found;
-        this.loading = false;
-        return;
-      }
-    }
-    this.notFound = true;
-    this.loading = false;
-  }
-
-  private readLocalProducts(): Product[] | null {
-    try {
-      const raw = localStorage.getItem('products');
-      return raw ? (JSON.parse(raw) as Product[]) : null;
-    } catch { return null; }
-  }
-
+  // ====== actions ======
   dec(){ if (this.qty > 1) this.qty--; }
   inc(){ this.qty++; }
 
   addToCart(){
-    // demo nhẹ: lưu vào localStorage "cart" (bạn có thể thay bằng service riêng)
     if (!this.product) return;
     const cart = JSON.parse(localStorage.getItem('cart') || '[]');
     cart.push({ ...this.product, qty: this.qty, addedAt: Date.now() });
     localStorage.setItem('cart', JSON.stringify(cart));
     alert('Đã thêm vào giỏ!');
   }
-
-  goBack(){ this.router.navigate(['/product']); }
+  buyNow(){
+    if (!this.product) return;
+    this.addToCart();
+    this.router.navigate(['/checkout']); // hoặc chuyển sang /cart nếu bạn có route
+  }
+  goBack(){ this.router.navigate(['/products']); }
 }
