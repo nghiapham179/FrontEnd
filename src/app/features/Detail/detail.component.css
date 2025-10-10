@@ -184,7 +184,7 @@ img { max-width: 100%; display: block; height: auto; }
   padding: clamp(14px, 1.4vw, 18px); color:#111;
   box-shadow: 0 6px 18px rgba(0,0,0,.06) inset;
 }
-.info-title{ margin:0 0 10px; font-size:16px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:#222; }
+.info-title{ margin:0 0 10px; font-size:16px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:#e8e8e8; }
 .desc{ margin:0; line-height:1.7; }
 .muted{ color: var(--muted); }
 
@@ -205,7 +205,7 @@ img { max-width: 100%; display: block; height: auto; }
   background-size: 28px 28px; opacity: .55;
 }
 .detail-card .panel{ background: linear-gradient(180deg, #1a1a1d, #151518); color: var(--text); border-color: var(--border); }
-.detail-card .title{ color:#0f0f12; }
+.detail-card .title{ color:#0e0e0e ; }
 .detail-card .action{ border-color: var(--border); }
 .detail-card .btn--accent.action{ color:#111; }
 
