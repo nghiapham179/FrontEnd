@@ -8,65 +8,42 @@
   [class.force-off]="forceOff"
   (animationend)="onCoverAnimEnd($event)"
 >
-  <img
-    class="poster-media"
-    src="assets/Phone/IPhone.jpg"
-    alt="TechNoX poster"
-    width="1200"
-    height="800"
-    decoding="async"
-    fetchpriority="high"
-  />
+  <img class="poster-media" src="assets/Phone/IPhone.jpg" alt="TechNoX poster" width="1200" height="800" decoding="async" fetchpriority="high" />
   <h1 class="poster-title">TECHNO<span>X</span></h1>
-  <!-- <button class="poster-skip" type="button" (click)="skipCover()">Skip</button> -->
 </section>
 
 <!-- HEADER -->
 <header class="site-header">
   <div class="container header-inner">
-    <!-- Nút menu: thêm aria-controls/expanded -->
-    <button
-      class="icon-btn"
-      type="button"
-      (click)="toggleMenu()"
-      aria-label="Mở menu"
-      aria-controls="mobileMenu"
-      [attr.aria-expanded]="mobileMenuOpen ? 'true' : 'false'"
-    >
-      ☰
-    </button>
+    <!-- Nút menu -->
+    <button class="icon-btn" type="button" (click)="toggleMenu()" aria-label="Mở menu" aria-controls="mobileMenu" [attr.aria-expanded]="mobileMenuOpen ? 'true' : 'false'">☰</button>
 
     <!-- LOGO -->
     <a class="brand" routerLink="/" aria-label="Trang chủ TechNoX">
-      <img
-        class="brand__logo"
-        src="assets/Phone/Logo.png"
-        alt="TechNoX"
-        width="200"
-        height="40"
-        decoding="async"
-        fetchpriority="high"
-      />
+      <img class="brand__logo" src="assets/Phone/Logo.png" alt="TechNoX" width="200" height="40" decoding="async" fetchpriority="high" />
       <span class="brand__name">TechNoX</span>
     </a>
 
     <div class="header-actions">
-      <a class="link-auth" routerLink="/login">Đăng nhập</a>
-      <a class="btn btn--accent btn-auth" routerLink="/register">Đăng ký</a>
-      <a class="cart" routerLink="/cart" aria-label="Giỏ hàng">Giỏ hàng (0)</a>
+      <!-- ĐÃ ĐĂNG NHẬP -->
+      <ng-container *ngIf="auth.user(); else guestActions">
+        <span class="welcome">Xin chào, <strong>{{ auth.user()?.name }}</strong></span>
+        <button class="btn btn--outline" type="button" (click)="logout()">Đăng xuất</button>
+        <a class="cart" routerLink="/cart" aria-label="Giỏ hàng">Giỏ hàng (0)</a>
+      </ng-container>
+
+      <!-- CHƯA ĐĂNG NHẬP -->
+      <ng-template #guestActions>
+        <a class="link-auth" routerLink="/login">Đăng nhập</a>
+        <a class="btn btn--accent btn-auth" routerLink="/register">Đăng ký</a>
+        <a class="cart" routerLink="/cart" aria-label="Giỏ hàng">Giỏ hàng (0)</a>
+      </ng-template>
     </div>
   </div>
 </header>
 
 <!-- MOBILE MENU -->
-<nav
-  class="mobile-menu"
-  id="mobileMenu"
-  [class.open]="mobileMenuOpen"
-  (click)="closeMenu()"
-  aria-label="Menu di động"
->
-  <!-- Ngăn click xuyên -->
+<nav class="mobile-menu" id="mobileMenu" [class.open]="mobileMenuOpen" (click)="closeMenu()" aria-label="Menu di động">
   <div class="mobile-menu__panel" (click)="$event.stopPropagation()">
     <button class="mobile-menu__close" type="button" (click)="closeMenu()" aria-label="Đóng menu">✕</button>
     <ul>
@@ -75,11 +52,19 @@
       <li><a routerLink="/laptop" (click)="closeMenu()">Laptop</a></li>
       <li><a routerLink="/privacy" (click)="closeMenu()">Chính Sách</a></li>
 
-      <!-- FIX: thiếu dấu () trong closeMenu -->
-
       <li class="divider" role="separator" aria-hidden="true"></li>
-      <li><a routerLink="/login" (click)="closeMenu()">Đăng nhập</a></li>
-      <li><a routerLink="/register" (click)="closeMenu()">Đăng ký</a></li>
+
+      <!-- ĐÃ ĐĂNG NHẬP -->
+      <ng-container *ngIf="auth.user(); else mobileGuest">
+        <li class="muted">Xin chào, <strong>{{ auth.user()?.name }}</strong></li>
+        <li><button class="link-like" type="button" (click)="logout(); closeMenu()">Đăng xuất</button></li>
+      </ng-container>
+
+      <!-- CHƯA ĐĂNG NHẬP -->
+      <ng-template #mobileGuest>
+        <li><a routerLink="/login" (click)="closeMenu()">Đăng nhập</a></li>
+        <li><a routerLink="/register" (click)="closeMenu()">Đăng ký</a></li>
+      </ng-template>
     </ul>
   </div>
 </nav>
@@ -96,24 +81,9 @@
       </p>
       <a class="btn btn--accent" href="#" aria-label="Mua ngay">MUA NGAY</a>
 
-      <!-- Hero gallery: ảnh đầu ưu tiên cao, ảnh sau lazy -->
       <div class="hero__gallery">
-        <img
-          src="assets/Phone/IPhone.jpg"
-          alt="Flagship phone"
-          width="1200"
-          height="800"
-          loading="eager"
-          decoding="async"
-        />
-        <img
-          src="assets/Phone/Iphone1.jpg"
-          alt="Flagship phone"
-          width="1200"
-          height="800"
-          loading="lazy"
-          decoding="async"
-        />
+        <img src="assets/Phone/IPhone.jpg" alt="Flagship phone" width="1200" height="800" loading="eager" decoding="async" />
+        <img src="assets/Phone/Iphone1.jpg" alt="Flagship phone" width="1200" height="800" loading="lazy" decoding="async" />
       </div>
     </div>
   </section>
@@ -124,15 +94,9 @@
       <p class="eyebrow eyebrow--gold">Dòng sản phẩm nổi bật</p>
       <h2 class="section-title">ĐIỆN THOẠI<br />ĐƯỢC CHỌN LỌC</h2>
 
-      <!-- #heroGrid: TS ước lượng cột -> heroPageSize -->
       <div #heroGrid class="card-grid">
         <article class="card" *ngFor="let p of heroPaged; trackBy: trackById">
-          <a
-            class="card__media"
-            [style.background-image]="'url(' + p.image + ')'"
-            [attr.aria-label]="p.name"
-            href="#"
-          ></a>
+          <a class="card__media" [style.background-image]="'url(' + p.image + ')'" [attr.aria-label]="p.name" href="#"></a>
           <div class="card__body">
             <h3 class="card__title">{{ p.name }}</h3>
             <div class="chip-row" *ngIf="p.tags?.length">
@@ -144,57 +108,38 @@
         </article>
       </div>
 
-      <!-- PHẦN PAGER + NÚT XEM THÊM (cân giữa) -->
+      <!-- PAGER + NÚT XEM TOÀN BỘ (ép login) -->
       <div class="section-cta">
         <nav class="pager" role="navigation" aria-label="Phân trang sản phẩm nổi bật">
-          <button
-            class="pager__btn"
-            type="button"
-            (click)="heroPrev()"
-            [disabled]="heroPage === 1"
-            [attr.aria-disabled]="heroPage === 1"
-          >←</button>
-
+          <button class="pager__btn" type="button" (click)="heroPrev()" [disabled]="heroPage === 1" [attr.aria-disabled]="heroPage === 1">←</button>
           <span class="pager__info">Trang {{ heroPage }} / {{ heroTotalPages }}</span>
-
-          <button
-            class="pager__btn"
-            type="button"
-            (click)="heroNext()"
-            [disabled]="heroPage === heroTotalPages"
-            [attr.aria-disabled]="heroPage === heroTotalPages"
-          >→</button>
+          <button class="pager__btn" type="button" (click)="heroNext()" [disabled]="heroPage === heroTotalPages" [attr.aria-disabled]="heroPage === heroTotalPages">→</button>
         </nav>
 
-        <a class="btn btn--black view-all" [routerLink]="['/san-pham']">
+        <button
+          class="btn btn--black view-all"
+          type="button"
+          (click)="goToProducts()"
+          [attr.aria-disabled]="!auth.user() ? 'true' : null"
+          [class.btn-disabled]="!auth.user()"
+          [title]="auth.user() ? '' : 'Vui lòng đăng nhập để xem toàn bộ sản phẩm'"
+        >
           XEM TOÀN BỘ SẢN PHẨM
-        </a>
+        </button>
       </div>
     </div>
   </section>
+
   <!-- LAPTOP -->
   <section class="laptop-intro section-pad">
     <div class="container">
       <div class="split">
         <div class="split__media">
-          <video
-            #heroVideo
-            class="hero-video"
-            autoplay
-            muted
-            loop
-            playsinline
-            preload="auto"
-            (error)="onVideoError($event)"
-            (canplay)="onVideoCanPlay()"
-          >
+          <video #heroVideo class="hero-video" autoplay muted loop playsinline preload="auto" (error)="onVideoError($event)" (canplay)="onVideoCanPlay()">
             <source src="assets/Video/MacPro.mp4" type="video/mp4" />
             Trình duyệt của bạn không hỗ trợ video.
           </video>
-
-          <button class="mute-btn" type="button" (click)="toggleMute(heroVideo)" aria-label="Bật/tắt âm thanh video">
-            {{ isMuted ? '🔇' : '🔊' }}
-          </button>
+          <button class="mute-btn" type="button" (click)="toggleMute(heroVideo)" aria-label="Bật/tắt âm thanh video">{{ isMuted ? '🔇' : '🔊' }}</button>
         </div>
 
         <div class="split__content">
@@ -217,7 +162,6 @@
       <p class="eyebrow eyebrow--gold">Sản phẩm kèm theo</p>
       <h2 class="section-title">PHỤ KIỆN</h2>
 
-      <!-- #catalogGrid: TS ước lượng cột -> pageSize -->
       <div #catalogGrid class="journal-grid">
         <article class="story" *ngFor="let it of paged; trackBy: trackById">
           <a class="story__media" [style.background-image]="'url(' + it.image + ')'" href="#" [attr.aria-label]="it.name"></a>
@@ -226,29 +170,24 @@
         </article>
       </div>
 
-      <!-- PAGER + NÚT XEM THÊM PHỤ KIỆN -->
+      <!-- PAGER + NÚT XEM THÊM (ép login) -->
       <div class="section-cta">
         <nav class="pager" role="navigation" aria-label="Phân trang phụ kiện">
-          <button
-            class="pager__btn"
-            type="button"
-            (click)="prevPage()"
-            [disabled]="page === 1"
-            [attr.aria-disabled]="page === 1"
-          >←</button>
-
+          <button class="pager__btn" type="button" (click)="prevPage()" [disabled]="page === 1" [attr.aria-disabled]="page === 1">←</button>
           <span class="pager__info">Trang {{ page }} / {{ totalPages }}</span>
-
-          <button
-            class="pager__btn"
-            type="button"
-            (click)="nextPage()"
-            [disabled]="page === totalPages"
-            [attr.aria-disabled]="page === totalPages"
-          >→</button>
+          <button class="pager__btn" type="button" (click)="nextPage()" [disabled]="page === totalPages" [attr.aria-disabled]="page === totalPages">→</button>
         </nav>
 
-        <a class="btn btn--black view-all" routerLink="/shop">XEM THÊM</a>
+        <button
+          class="btn btn--black view-all"
+          type="button"
+          (click)="goToProducts()"
+          [attr.aria-disabled]="!auth.user() ? 'true' : null"
+          [class.btn-disabled]="!auth.user()"
+          [title]="auth.user() ? '' : 'Vui lòng đăng nhập để xem thêm sản phẩm'"
+        >
+          XEM THÊM
+        </button>
       </div>
     </div>
   </section>
@@ -310,18 +249,10 @@
 </footer>
 
 <!-- COOKIE BANNER -->
-<div
-  class="cookie"
-  *ngIf="cookieOpen"
-  role="dialog"
-  aria-live="polite"
-  aria-label="Tùy chọn cookie"
->
+<div class="cookie" *ngIf="cookieOpen" role="dialog" aria-live="polite" aria-label="Tùy chọn cookie">
   <div class="cookie__panel">
     <h4 class="cookie__title">Cookie preference</h4>
-    <p class="cookie__text">
-      Chúng tôi dùng cookie để cải thiện trải nghiệm của bạn trên website.
-    </p>
+    <p class="cookie__text">Chúng tôi dùng cookie để cải thiện trải nghiệm của bạn trên website.</p>
     <div class="cookie__actions">
       <button class="btn" type="button" (click)="acceptCookies()">ĐỒNG Ý</button>
       <button class="btn" type="button" (click)="refuseCookies()">TỪ CHỐI</button>

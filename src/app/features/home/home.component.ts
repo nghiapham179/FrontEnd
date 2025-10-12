@@ -1,6 +1,7 @@
 import { Component, AfterViewInit, ElementRef, ViewChild, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
+import { AuthService } from '../../auth/auth.service'; // chỉnh path nếu bạn đặt service chỗ khác
 
 @Component({
   selector: 'app-home',
@@ -10,23 +11,24 @@ import { RouterModule } from '@angular/router';
   styleUrls: ['./home.component.css'],
 })
 export class HomeComponent implements AfterViewInit, OnDestroy {
-  // ===== Header/Menu/Cookies =====
+  // ===== Header / Menu / Cookies =====
   mobileMenuOpen = false;
   cookieOpen = true;
 
+  constructor(private router: Router, public auth: AuthService) {}
+
   // ===== Poster cover =====
-  showCover = true;   // poster đang hiển thị
-  forceOff  = false;  // cầu dao phòng kẹt (tuỳ chọn)
+  showCover = true;       // poster đang hiển thị
+  forceOff  = false;      // cầu dao nếu animation kẹt
 
   // ===== Video refs & state =====
   @ViewChild('heroVideo') heroVideo!: ElementRef<HTMLVideoElement>;
   isMuted = true;
 
-  // (optional) quản lý timeout để clear khi destroy
+  // quản lý timeout để clear khi destroy
   private _timeouts: any[] = [];
 
   // ===== Accessories + paging (PHỤ KIỆN) =====
-  // Chuẩn hoá dữ liệu: dùng 'tags' (mảng) để khớp template {{ it.tags?.[0] }}
   accessories = [
     { name: 'Tai nghe Bluetooth', price: 1_290_000, tags: ['Âm thanh HD'],    image: 'assets/accessories/headphone.jpg' },
     { name: 'Sạc nhanh 65W',     price:   690_000, tags: ['Type-C PD'],       image: 'assets/accessories/charger.jpg' },
@@ -42,7 +44,6 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
     const start = (this.page - 1) * this.pageSize;
     return this.accessories.slice(start, start + this.pageSize);
   }
-  // Alias khớp template: *ngFor="let it of paged"
   get paged() { return this.pagedAccessories; }
   nextPage(){ if (this.page < this.totalPages) this.page++; }
   prevPage(){ if (this.page > 1) this.page--; }
@@ -57,9 +58,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   ];
   featuredPage = 1;
   featuredPageSize = 3;
-  get featuredTotalPages() {
-    return Math.max(1, Math.ceil(this.featured.length / this.featuredPageSize));
-  }
+  get featuredTotalPages() { return Math.max(1, Math.ceil(this.featured.length / this.featuredPageSize)); }
   get pagedFeatured() {
     const start = (this.featuredPage - 1) * this.featuredPageSize;
     return this.featured.slice(start, start + this.featuredPageSize);
@@ -67,21 +66,19 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   nextFeatured(){ if (this.featuredPage < this.featuredTotalPages) this.featuredPage++; }
   prevFeatured(){ if (this.featuredPage > 1) this.featuredPage--; }
 
-  // ===== ALIASES để khớp tên trong template hiện tại =====
-  // Template đang dùng heroPaged / heroPage / heroTotalPages / heroNext / heroPrev
+  // ===== ALIASES khớp template hiện tại =====
   get heroPaged() { return this.pagedFeatured; }
   get heroPage() { return this.featuredPage; }
   get heroTotalPages() { return this.featuredTotalPages; }
   heroNext(){ this.nextFeatured(); }
   heroPrev(){ this.prevFeatured(); }
 
-  // Template dùng trackBy: trackById
+  // ===== trackBy cho *ngFor =====
   trackById(index: number, item: any): number | string {
-    // Trả về id nếu có; fallback name; cuối cùng là index
     return (item && (item.id ?? item._id ?? item.code ?? item.name)) ?? index;
   }
 
-  // ===== Menu / cookies =====
+  // ===== Menu / Cookies =====
   toggleMenu(){ this.mobileMenuOpen = !this.mobileMenuOpen; }
   closeMenu(){ this.mobileMenuOpen = false; }
   acceptCookies(){ this.cookieOpen = false; }
@@ -92,8 +89,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   ngAfterViewInit(): void {
     // Poster vào (0.7s) + pause (1.0s) + ra (0.8s) ~ 2.3s
     this._timeouts.push(setTimeout(() => { this.showCover = false; }, 2300));
-
-    // Cầu dao cứng nếu vì lý do gì animation không chạy
+    // Cầu dao cứng nếu animation không chạy
     this._timeouts.push(setTimeout(() => { this.forceOff = true; this.showCover = false; }, 3500));
 
     // Ép autoplay video (đa số trình duyệt yêu cầu muted)
@@ -102,10 +98,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
       v.muted = true;
       const p = v.play();
       if (p) {
-        p.catch(() => {
-          v.muted = true;
-          v.play().catch(() => {});
-        });
+        p.catch(() => { v.muted = true; v.play().catch(() => {}); });
       }
     }
   }
@@ -116,32 +109,39 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
 
   // ===== Poster cover anim handler =====
   onCoverAnimEnd(e: AnimationEvent) {
-    if (e.target !== e.currentTarget) return; // chỉ lắng nghe từ <section>
+    if (e.target !== e.currentTarget) return;
     if (e.animationName === 'cover-out-up' || e.animationName === 'cover-out') {
       this.showCover = false;
     }
   }
-  add(product: any): void {
-    console.log('Thêm vào giỏ hàng:', product);
-  }
 
-  // ===== Video handlers used in template =====
+  // ===== hành động demo =====
+  add(product: any): void { console.log('Thêm vào giỏ hàng:', product); }
+
+  // ===== Video handlers =====
   toggleMute(videoEl: HTMLVideoElement) {
     this.isMuted = !this.isMuted;
     videoEl.muted = this.isMuted;
     if (!this.isMuted) videoEl.play().catch(() => {});
   }
-
   onVideoError(evt: Event) {
     const v = evt.target as HTMLVideoElement;
     console.error('VIDEO ERROR:', v?.error);
-    // v.poster = 'assets/fallback.jpg'; // (tuỳ chọn) fallback poster
+  }
+  onVideoCanPlay() {}
+
+  // ===== Auth helpers cho template =====
+  /** Ép đăng nhập trước khi vào trang sản phẩm */
+  goToProducts() {
+    const productsRoute = '/san-pham'; // đổi theo route thực tế: '/products' hoặc '/shop'
+    if (this.auth.isLoggedIn()) this.router.navigate([productsRoute]);
+    else this.router.navigate(['/login'], { queryParams: { redirect: productsRoute } });
   }
 
-  onVideoCanPlay() {
-    // Hook khi video đã đủ dữ liệu để play (nếu cần bỏ loader, thêm class...)
+  /** Đăng xuất + đóng menu + quay về trang chủ */
+  logout() {
+    this.auth.logout();
+    this.closeMenu();
+    this.router.navigate(['/']);
   }
-
-  // (tuỳ chọn) có nút Skip
-  // skipCover(){ this.forceOff = true; this.showCover = false; }
 }

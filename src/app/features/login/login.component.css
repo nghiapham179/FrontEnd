@@ -297,3 +297,8 @@
   background: #111;
   border-color: #111;
 }
+.header-actions { display:flex; align-items:center; gap:12px; }
+.header-actions .welcome { white-space: nowrap; }
+.link-like { background:none; border:0; padding:0; color:inherit; cursor:pointer; }
+.mobile-menu .muted { color:#888; }
+
