@@ -1,7 +1,9 @@
+// src/app/features/auth/login.component.ts
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { AuthService } from '../../auth/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -11,46 +13,51 @@ import { Router } from '@angular/router';
   imports: [CommonModule, FormsModule]
 })
 export class LoginComponent {
-  model: { username: string; password: string; remember: boolean } = {
+  model = {
     username: '',
     password: '',
     remember: false
   };
 
-  isSubmitting: boolean = false;
+  isSubmitting = false;
+  errorMsg = '';
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute,
+    private auth: AuthService
+  ) {}
 
-  onSubmit(): void {
+  async onSubmit(): Promise<void> {
+    this.errorMsg = '';
     if (!this.model.username || !this.model.password) {
-      alert('Vui lòng nhập đủ Username và Password');
+      this.errorMsg = 'Vui lòng nhập đủ Username và Password';
       return;
     }
 
     this.isSubmitting = true;
+    try {
+      // BE mong chờ email -> dùng username như email
+      await this.auth.login(this.model.username, this.model.password, this.model.remember);
 
-    setTimeout(() => {
+      // Điều hướng: ưu tiên ?redirect=/... nếu có
+      const redirect = this.route.snapshot.queryParamMap.get('redirect') || '/';
+      this.router.navigateByUrl(redirect);
+    } catch (err: any) {
+      // Hiển thị lỗi từ BE (nếu BE trả message)
+      this.errorMsg = err?.error?.message || 'Đăng nhập thất bại. Vui lòng kiểm tra lại!';
+    } finally {
       this.isSubmitting = false;
-
-      if (this.model.remember) {
-        localStorage.setItem('rememberUser', this.model.username);
-      } else {
-        localStorage.removeItem('rememberUser');
-      }
-
-      this.router.navigate(['/']);
-    }, 500);
+    }
   }
 
   onForgotPassword(): void {
-    // Điều hướng đến trang quên mật khẩu
     this.router.navigate(['/forgot-password']);
-    console.log('Forgot password clicked');
   }
 
   onRegister(): void {
-    // Điều hướng đến trang đăng ký
-    this.router.navigate(['/register']);
-    console.log('Register clicked');
+    // Nếu muốn auto-redirect về trang đang xem sau khi register xong
+    const redirect = this.route.snapshot.queryParamMap.get('redirect');
+    this.router.navigate(['/register'], { queryParams: redirect ? { redirect } : undefined });
   }
 }

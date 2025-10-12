@@ -6,7 +6,9 @@
       to AppLc <br />
       User Area
     </h1>
-    <p class="brand-note">To request an account,<br />just call us</p>
+    <p class="brand-note">
+      To request an account,<br />just call us
+    </p>
     <div class="hotlines">
       <a href="tel:+245941660355">+245 04 166 0355</a>
       <a href="tel:+347423902456">+347 42 390 2456</a>
@@ -23,41 +25,73 @@
       <h2>Sign in</h2>
       <p class="description">
         Please enter your credentials first.<br />
-        Won't be shared publicly, won't be spanned.
+        We won't share your information.
       </p>
 
-      <form (ngSubmit)="onSubmit()" #formRef="ngForm" novalidate>
+      <!-- Lỗi trả về từ BE -->
+      <div class="alert error" *ngIf="errorMsg" role="alert">
+        {{ errorMsg }}
+      </div>
+
+      <form
+        (ngSubmit)="onSubmit()"
+        #formRef="ngForm"
+        novalidate
+        [attr.aria-busy]="isSubmitting ? 'true' : null"
+      >
+        <!-- Username/Email -->
         <input
           type="text"
           name="username"
           [(ngModel)]="model.username"
-          placeholder="User name"
+          #usr="ngModel"
+          placeholder="Email or username"
           required
+          autocomplete="username email"
+          [attr.aria-invalid]="usr.invalid && (usr.dirty || usr.touched) ? 'true' : null"
+          [attr.aria-describedby]="usr.invalid ? 'usr-err' : null"
+          autofocus
         />
+        <div class="field-error" *ngIf="usr.invalid && (usr.dirty || usr.touched)" id="usr-err">
+          <small *ngIf="usr.errors?.['required']">Username/Email is required.</small>
+        </div>
+
+        <!-- Password -->
         <input
           type="password"
           name="password"
           [(ngModel)]="model.password"
+          #pwd="ngModel"
           placeholder="Password"
           required
           minlength="6"
+          autocomplete="current-password"
+          [attr.aria-invalid]="pwd.invalid && (pwd.dirty || pwd.touched) ? 'true' : null"
+          [attr.aria-describedby]="pwd.invalid ? 'pwd-err' : null"
         />
+        <div class="field-error" *ngIf="pwd.invalid && (pwd.dirty || pwd.touched)" id="pwd-err">
+          <small *ngIf="pwd.errors?.['required']">Password is required.</small>
+          <small *ngIf="pwd.errors?.['minlength']">Minimum 6 characters.</small>
+        </div>
 
+        <!-- Remember me -->
         <div class="remember">
           <label>
             <input
               type="checkbox"
               name="remember"
               [(ngModel)]="model.remember"
+              autocomplete="on"
             />
             Remember me
           </label>
         </div>
 
+        <!-- Submit -->
         <button
           type="submit"
           class="primary-btn"
-          [disabled]="isSubmitting"
+          [disabled]="isSubmitting || formRef.invalid"
         >
           <span *ngIf="!isSubmitting">Sign in</span>
           <span *ngIf="isSubmitting">Signing in...</span>
@@ -65,13 +99,7 @@
       </form>
 
       <div class="action-buttons">
-        <button
-          type="button"
-          class="small-btn"
-          (click)="onForgotPassword()"
-        >
-          Forgot Password?
-        </button>
+        <button type="button" class="small-btn" (click)="onForgotPassword()">Forgot Password?</button>
         <button
           type="button"
           class="small-btn register-btn"

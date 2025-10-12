@@ -301,4 +301,7 @@
 .header-actions .welcome { white-space: nowrap; }
 .link-like { background:none; border:0; padding:0; color:inherit; cursor:pointer; }
 .mobile-menu .muted { color:#888; }
+.alert.error { background:#fee; color:#c00; padding:.75rem 1rem; border-radius:.5rem; margin-bottom:1rem; }
+.field-error small { color:#c00; display:block; margin-top:.25rem; }
+.primary-btn[disabled] { opacity:.6; cursor:not-allowed; }
 
